@@ -30,6 +30,15 @@ class BackupFlow_Storage_Local {
 		);
 	}
 
+	public function upload_resumable( $file_path, $remote_name = '', $state = array(), $time_budget = 8 ) {
+		return array(
+			'done'     => true,
+			'progress' => 100,
+			'state'    => is_array( $state ) ? $state : array(),
+			'remote'   => $this->upload( $file_path, $remote_name ),
+		);
+	}
+
 	public function list_backups() {
 		return array();
 	}

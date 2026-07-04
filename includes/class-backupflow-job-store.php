@@ -13,19 +13,56 @@ class BackupFlow_Job_Store {
 	const OPTION = 'backupflow_jobs';
 
 	public function all() {
-		$jobs = get_option( self::OPTION, array() );
-		return is_array( $jobs ) ? $jobs : array();
+		$summaries = get_option( self::OPTION, array() );
+		$summaries = is_array( $summaries ) ? $summaries : array();
+		$jobs      = array();
+
+		foreach ( $summaries as $job_id => $summary ) {
+			$job = $this->get( $job_id );
+			if ( $job ) {
+				$jobs[ $job_id ] = $job;
+			} elseif ( is_array( $summary ) ) {
+				$jobs[ $job_id ] = $summary;
+			}
+		}
+
+		return $jobs;
 	}
 
 	public function get( $job_id ) {
-		$jobs   = $this->all();
 		$job_id = sanitize_key( $job_id );
-		return isset( $jobs[ $job_id ] ) && is_array( $jobs[ $job_id ] ) ? $jobs[ $job_id ] : null;
+		if ( '' === $job_id ) {
+			return null;
+		}
+
+		$path = $this->path( $job_id );
+		if ( file_exists( $path ) ) {
+			$job = backupflow_read_json_file( $path, array() );
+			return $job ? $this->normalize_job( $job ) : null;
+		}
+
+		$summaries = get_option( self::OPTION, array() );
+		return isset( $summaries[ $job_id ] ) && is_array( $summaries[ $job_id ] ) ? $this->normalize_job( $summaries[ $job_id ] ) : null;
 	}
 
 	public function create( $type, $payload = array() ) {
-		$job_id = backupflow_generate_id( $type );
-		$job    = array(
+		$job_id  = backupflow_generate_id( $type );
+		$payload = is_array( $payload ) ? $payload : array();
+		$payload = wp_parse_args(
+			$payload,
+			array(
+				'format_version'  => 2,
+				'current_step'    => 'queued',
+				'step_offset'     => 0,
+				'bytes_done'      => 0,
+				'bytes_total'     => 0,
+				'retry_count'     => 0,
+				'checksum_status' => 'pending',
+				'cancel_requested'=> false,
+			)
+		);
+
+		$job = array(
 			'id'         => $job_id,
 			'type'       => sanitize_key( $type ),
 			'status'     => 'queued',
@@ -33,7 +70,7 @@ class BackupFlow_Job_Store {
 			'step'       => 'queued',
 			'message'    => __( 'Queued', 'backupflow' ),
 			'logs'       => array(),
-			'payload'    => is_array( $payload ) ? $payload : array(),
+			'payload'    => $payload,
 			'result'     => array(),
 			'error'      => '',
 			'created_at' => current_time( 'mysql' ),
@@ -45,19 +82,14 @@ class BackupFlow_Job_Store {
 	}
 
 	public function save( $job ) {
-		$jobs = $this->all();
+		$job = $this->normalize_job( $job );
+		$job['payload']['current_step'] = $job['step'];
 		$job['updated_at'] = current_time( 'mysql' );
-		$jobs[ sanitize_key( $job['id'] ) ] = $this->trim_job( $job );
 
-		uasort(
-			$jobs,
-			static function ( $a, $b ) {
-				return strcmp( isset( $b['updated_at'] ) ? $b['updated_at'] : '', isset( $a['updated_at'] ) ? $a['updated_at'] : '' );
-			}
-		);
+		backupflow_ensure_storage_dirs();
+		backupflow_write_json_file( $this->path( $job['id'] ), $job );
+		$this->save_summary( $job );
 
-		$jobs = array_slice( $jobs, 0, 30, true );
-		update_option( self::OPTION, $jobs, false );
 		return $job;
 	}
 
@@ -138,10 +170,11 @@ class BackupFlow_Job_Store {
 			return $job;
 		}
 
-		$job['status']  = 'cancelled';
-		$job['step']    = 'cancelled';
-		$job['message'] = __( 'Process cancelled by the administrator.', 'backupflow' );
-		$job['logs'][]  = array(
+		$job['status']                      = 'cancelled';
+		$job['step']                        = 'cancelled';
+		$job['message']                     = __( 'Process cancelled by the administrator.', 'backupflow' );
+		$job['payload']['cancel_requested'] = true;
+		$job['logs'][]                      = array(
 			'time'    => current_time( 'H:i:s' ),
 			'level'   => 'warning',
 			'message' => $job['message'],
@@ -151,19 +184,89 @@ class BackupFlow_Job_Store {
 	}
 
 	public function delete( $job_id ) {
-		$jobs   = $this->all();
-		$job_id = sanitize_key( $job_id );
-		if ( isset( $jobs[ $job_id ] ) ) {
-			unset( $jobs[ $job_id ] );
-			update_option( self::OPTION, $jobs, false );
+		$job_id    = sanitize_key( $job_id );
+		$summaries = get_option( self::OPTION, array() );
+		if ( isset( $summaries[ $job_id ] ) ) {
+			unset( $summaries[ $job_id ] );
+			update_option( self::OPTION, $summaries, false );
+		}
+
+		$path = $this->path( $job_id );
+		if ( file_exists( $path ) && backupflow_path_is_inside( $path, backupflow_jobs_dir() ) ) {
+			wp_delete_file( $path );
 		}
 	}
 
-	private function trim_job( $job ) {
-		if ( isset( $job['logs'] ) && is_array( $job['logs'] ) && count( $job['logs'] ) > 120 ) {
-			$job['logs'] = array_slice( $job['logs'], -120 );
+	private function save_summary( $job ) {
+		$summaries = get_option( self::OPTION, array() );
+		$summaries = is_array( $summaries ) ? $summaries : array();
+
+		$summaries[ sanitize_key( $job['id'] ) ] = array(
+			'id'         => $job['id'],
+			'type'       => $job['type'],
+			'status'     => $job['status'],
+			'progress'   => $job['progress'],
+			'step'       => $job['step'],
+			'message'    => $job['message'],
+			'error'      => $job['error'],
+			'result'     => isset( $job['result']['backup']['id'] ) ? array( 'backup' => array( 'id' => $job['result']['backup']['id'] ) ) : array(),
+			'created_at' => $job['created_at'],
+			'updated_at' => $job['updated_at'],
+		);
+
+		uasort(
+			$summaries,
+			static function ( $a, $b ) {
+				return strcmp( isset( $b['updated_at'] ) ? $b['updated_at'] : '', isset( $a['updated_at'] ) ? $a['updated_at'] : '' );
+			}
+		);
+
+		$summaries = array_slice( $summaries, 0, 30, true );
+		update_option( self::OPTION, $summaries, false );
+	}
+
+	private function normalize_job( $job ) {
+		$job = is_array( $job ) ? $job : array();
+		$job = wp_parse_args(
+			$job,
+			array(
+				'id'         => '',
+				'type'       => '',
+				'status'     => 'queued',
+				'progress'   => 0,
+				'step'       => 'queued',
+				'message'    => '',
+				'logs'       => array(),
+				'payload'    => array(),
+				'result'     => array(),
+				'error'      => '',
+				'created_at' => current_time( 'mysql' ),
+				'updated_at' => current_time( 'mysql' ),
+			)
+		);
+
+		$job['payload'] = wp_parse_args(
+			is_array( $job['payload'] ) ? $job['payload'] : array(),
+			array(
+				'format_version'  => 2,
+				'current_step'    => isset( $job['step'] ) ? $job['step'] : 'queued',
+				'step_offset'     => 0,
+				'bytes_done'      => 0,
+				'bytes_total'     => 0,
+				'retry_count'     => 0,
+				'checksum_status' => 'pending',
+				'cancel_requested'=> false,
+			)
+		);
+
+		if ( isset( $job['logs'] ) && is_array( $job['logs'] ) && count( $job['logs'] ) > 180 ) {
+			$job['logs'] = array_slice( $job['logs'], -180 );
 		}
 
 		return $job;
+	}
+
+	private function path( $job_id ) {
+		return trailingslashit( backupflow_jobs_dir() ) . sanitize_key( $job_id ) . '.json';
 	}
 }

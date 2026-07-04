@@ -19,6 +19,7 @@ class BackupFlow {
 	public $backup_manager;
 	public $restore_manager;
 	public $migrator;
+	public $preflight;
 	public $admin;
 
 	public static function instance() {
@@ -55,9 +56,10 @@ class BackupFlow {
 		$this->backup_manager  = new BackupFlow_Backup_Manager( $this->jobs, $this->database, $this->files, $this->storage );
 		$this->restore_manager = new BackupFlow_Restore_Manager( $this->jobs, $this->database, $this->files );
 		$this->migrator        = new BackupFlow_Migrator();
+		$this->preflight       = new BackupFlow_Preflight();
 
 		if ( is_admin() ) {
-			$this->admin = new BackupFlow_Admin( $this->backup_manager, $this->restore_manager, $this->jobs, $this->storage, $this->migrator );
+			$this->admin = new BackupFlow_Admin( $this->backup_manager, $this->restore_manager, $this->jobs, $this->storage, $this->migrator, $this->preflight );
 		}
 	}
 }

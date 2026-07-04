@@ -10,6 +10,137 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class BackupFlow_File_System {
+	public function prepare_file_scan_state( $list_path, $root, $exclude_paths = array() ) {
+		$root = trailingslashit( wp_normalize_path( $root ) );
+		$dir  = dirname( $list_path );
+		if ( ! wp_mkdir_p( $dir ) ) {
+			throw new RuntimeException( esc_html__( 'Could not create temporary file list folder.', 'backupflow' ) );
+		}
+
+		$handle = fopen( $list_path, 'w' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+		if ( ! $handle ) {
+			throw new RuntimeException( esc_html__( 'Could not create the temporary file list.', 'backupflow' ) );
+		}
+		fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+
+		return array(
+			'list_path'      => $list_path,
+			'root'           => $root,
+			'exclude_paths'  => is_array( $exclude_paths ) ? array_values( $exclude_paths ) : array(),
+			'stack'          => array( '' ),
+			'current_dir'    => null,
+			'current_offset' => 0,
+			'total'          => 0,
+			'excluded'       => 0,
+			'bytes_total'    => 0,
+			'done'           => false,
+		);
+	}
+
+	public function scan_files_chunk( $state, $time_limit = 8, $progress_callback = null ) {
+		$state      = is_array( $state ) ? $state : array();
+		$started_at = microtime( true );
+		$time_limit = max( 2, (int) $time_limit );
+
+		if ( ! empty( $state['done'] ) ) {
+			return $state;
+		}
+
+		$root      = isset( $state['root'] ) ? trailingslashit( wp_normalize_path( $state['root'] ) ) : trailingslashit( wp_normalize_path( ABSPATH ) );
+		$list_path = isset( $state['list_path'] ) ? $state['list_path'] : '';
+		if ( ! $list_path ) {
+			throw new RuntimeException( esc_html__( 'The file scan state is missing its file list.', 'backupflow' ) );
+		}
+
+		$handle = fopen( $list_path, 'a' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+		if ( ! $handle ) {
+			throw new RuntimeException( esc_html__( 'Could not update the temporary file list.', 'backupflow' ) );
+		}
+
+		while ( true ) {
+			if ( null === $state['current_dir'] ) {
+				if ( empty( $state['stack'] ) ) {
+					$state['done'] = true;
+					break;
+				}
+				$state['current_dir']    = array_pop( $state['stack'] );
+				$state['current_offset'] = 0;
+			}
+
+			$dir = $root . ltrim( (string) $state['current_dir'], '/' );
+			if ( ! is_dir( $dir ) || ! is_readable( $dir ) ) {
+				$state['current_dir'] = null;
+				continue;
+			}
+
+			$offset = 0;
+			try {
+				$iterator = new DirectoryIterator( $dir );
+				foreach ( $iterator as $entry ) {
+					if ( $entry->isDot() ) {
+						continue;
+					}
+
+					if ( $offset++ < (int) $state['current_offset'] ) {
+						continue;
+					}
+
+					$rel = trim( (string) $state['current_dir'], '/' );
+					$rel = $rel ? $rel . '/' . $entry->getFilename() : $entry->getFilename();
+					$rel = backupflow_clean_path( $rel );
+					$state['current_offset'] = $offset;
+
+					if ( $entry->isLink() ) {
+						continue;
+					}
+
+					if ( $entry->isDir() ) {
+						if ( ! $this->is_excluded( $rel, $state['exclude_paths'] ) ) {
+							$state['stack'][] = $rel;
+						}
+						continue;
+					}
+
+					if ( ! $entry->isFile() ) {
+						continue;
+					}
+
+					if ( $this->is_excluded( $rel, $state['exclude_paths'] ) ) {
+						$state['excluded']++;
+						continue;
+					}
+
+					fwrite( $handle, $rel . "\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
+					$state['total']++;
+					$state['bytes_total'] += (int) $entry->getSize();
+
+					if ( is_callable( $progress_callback ) && 0 === (int) $state['total'] % 500 ) {
+						call_user_func( $progress_callback, (int) $state['total'], (int) $state['excluded'] );
+					}
+
+					if ( microtime( true ) - $started_at >= $time_limit ) {
+						fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+						return $state;
+					}
+				}
+			} catch ( Throwable $e ) {
+				$state['current_dir'] = null;
+				continue;
+			}
+
+			$state['current_dir']    = null;
+			$state['current_offset'] = 0;
+
+			if ( microtime( true ) - $started_at >= $time_limit ) {
+				fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+				return $state;
+			}
+		}
+
+		fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+		return $state;
+	}
+
 	public function build_file_list( $list_path, $root, $exclude_paths = array(), $progress_callback = null ) {
 		$root = trailingslashit( wp_normalize_path( $root ) );
 		$dir  = dirname( $list_path );
@@ -92,14 +223,19 @@ class BackupFlow_File_System {
 
 			$abs = $root . $rel;
 			if ( file_exists( $abs ) && is_readable( $abs ) && is_file( $abs ) ) {
-				$zip->addFile( $abs, 'files/' . $rel );
+				if ( ! $zip->addFile( $abs, 'files/' . $rel ) ) {
+					$zip->close();
+					throw new RuntimeException( esc_html__( 'Could not add a website file to the backup archive.', 'backupflow' ) );
+				}
 				$added++;
 			} else {
 				$skipped++;
 			}
 		}
 
-		$zip->close();
+		if ( true !== $zip->close() ) {
+			throw new RuntimeException( esc_html__( 'Could not finish writing the backup archive.', 'backupflow' ) );
+		}
 
 		return array(
 			'next'    => $start + $added + $skipped,
@@ -128,6 +264,32 @@ class BackupFlow_File_System {
 
 		$zip->close();
 		return $count;
+	}
+
+	public function list_zip_entries( $zip_path, $prefix = '' ) {
+		if ( ! class_exists( 'ZipArchive' ) || ! file_exists( $zip_path ) ) {
+			return array();
+		}
+
+		$zip = new ZipArchive();
+		if ( true !== $zip->open( $zip_path ) ) {
+			return array();
+		}
+
+		$entries = array();
+		for ( $i = 0; $i < $zip->numFiles; $i++ ) {
+			$name = $zip->getNameIndex( $i );
+			if ( ! $name || '/' === substr( $name, -1 ) ) {
+				continue;
+			}
+			if ( $prefix && 0 !== strpos( $name, $prefix ) ) {
+				continue;
+			}
+			$entries[] = $name;
+		}
+		$zip->close();
+		sort( $entries );
+		return $entries;
 	}
 
 	public function extract_files_from_zip_chunk( $zip_path, $target_root, $zip_index, $limit, $skip_wp_config = true ) {
@@ -214,8 +376,13 @@ class BackupFlow_File_System {
 			throw new RuntimeException( esc_html__( 'Could not open the backup archive.', 'backupflow' ) );
 		}
 
-		$zip->addFromString( $name, wp_json_encode( $data, JSON_PRETTY_PRINT ) );
-		$zip->close();
+		if ( ! $zip->addFromString( $name, wp_json_encode( $data, JSON_PRETTY_PRINT ) ) ) {
+			$zip->close();
+			throw new RuntimeException( esc_html__( 'Could not add the backup manifest to the archive.', 'backupflow' ) );
+		}
+		if ( true !== $zip->close() ) {
+			throw new RuntimeException( esc_html__( 'Could not finish writing the backup archive.', 'backupflow' ) );
+		}
 	}
 
 	public function add_file_to_zip( $zip_path, $source, $name ) {
@@ -225,8 +392,13 @@ class BackupFlow_File_System {
 			throw new RuntimeException( esc_html__( 'Could not open the backup archive.', 'backupflow' ) );
 		}
 
-		$zip->addFile( $source, $name );
-		$zip->close();
+		if ( ! $zip->addFile( $source, $name ) ) {
+			$zip->close();
+			throw new RuntimeException( esc_html__( 'Could not add a file to the backup archive.', 'backupflow' ) );
+		}
+		if ( true !== $zip->close() ) {
+			throw new RuntimeException( esc_html__( 'Could not finish writing the backup archive.', 'backupflow' ) );
+		}
 	}
 
 	public function extract_zip_entry_to_file( $zip_path, $entry, $destination ) {
@@ -235,15 +407,24 @@ class BackupFlow_File_System {
 			throw new RuntimeException( esc_html__( 'Could not open the backup archive.', 'backupflow' ) );
 		}
 
-		$content = $zip->getFromName( $entry );
-		$zip->close();
-
-		if ( false === $content ) {
+		$stream = $zip->getStream( $entry );
+		if ( ! $stream ) {
+			$zip->close();
 			return false;
 		}
 
 		wp_mkdir_p( dirname( $destination ) );
-		file_put_contents( $destination, $content ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+		$out = fopen( $destination, 'w' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+		if ( ! $out ) {
+			fclose( $stream ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+			$zip->close();
+			return false;
+		}
+
+		stream_copy_to_stream( $stream, $out );
+		fclose( $stream ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+		fclose( $out ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+		$zip->close();
 		return true;
 	}
 

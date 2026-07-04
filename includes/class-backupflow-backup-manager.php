@@ -49,6 +49,9 @@ class BackupFlow_Backup_Manager {
 			'sql_path'      => trailingslashit( $tmp_dir ) . 'database.sql',
 			'file_total'    => 0,
 			'file_index'    => 0,
+			'db_export_state' => array(),
+			'file_scan_state' => array(),
+			'remote_upload' => array(),
 			'created_gmt'   => gmdate( 'c' ),
 			'manifest'      => $this->manifest( $backup_id, $type, $destination, $include_files, $include_db ),
 		);
@@ -81,6 +84,8 @@ class BackupFlow_Backup_Manager {
 					return $this->zip_files( $job );
 				case 'finalize':
 					return $this->finalize( $job );
+				case 'upload_remote':
+					return $this->upload_remote( $job );
 				default:
 					return $this->jobs->fail( $job['id'], __( 'Unknown backup step.', 'backupflow' ) );
 			}
@@ -112,13 +117,18 @@ class BackupFlow_Backup_Manager {
 
 	private function export_database( $job ) {
 		$payload = $job['payload'];
-		$this->jobs->log( $job['id'], __( 'Exporting database tables.', 'backupflow' ) );
 
-		$this->database->export_to_file(
-			$payload['sql_path'],
-			null,
+		if ( empty( $payload['db_export_state'] ) ) {
+			$payload['db_export_state'] = $this->database->prepare_export_state( $payload['tmp_dir'] );
+			$this->jobs->log( $job['id'], __( 'Exporting database tables in resumable parts.', 'backupflow' ) );
+		}
+
+		$payload['db_export_state'] = $this->database->export_chunk(
+			$payload['db_export_state'],
+			250,
+			8,
 			function ( $index, $total, $table ) use ( $job ) {
-				if ( 0 === $index % 5 || $index === $total ) {
+				if ( 0 === $index % 5 || $index === $total || 1 === $index ) {
 					$this->jobs->log(
 						$job['id'],
 						sprintf(
@@ -133,14 +143,30 @@ class BackupFlow_Backup_Manager {
 			}
 		);
 
-		$payload['manifest']['database_file'] = 'database.sql';
-		$payload['manifest']['tables']        = $this->database->get_tables();
-		$job['payload']                       = $payload;
-		$job['progress']                      = 30;
-		$job['message']                       = __( 'Database export complete', 'backupflow' );
-		$job['step']                          = $payload['include_files'] ? 'scan_files' : 'finalize';
+		$state = $payload['db_export_state'];
+		$total = max( 1, count( isset( $state['tables'] ) ? (array) $state['tables'] : array() ) );
+		$done  = ! empty( $state['done'] );
 
-		$this->jobs->log( $job['id'], __( 'Database export added to the backup package.', 'backupflow' ), 'success' );
+		$payload['manifest']['database_parts'] = array_map(
+			static function ( $part ) use ( $done ) {
+				return array(
+					'name'   => $part['name'],
+					'size'   => isset( $part['size'] ) ? (int) $part['size'] : 0,
+					'sha256' => $done && ! empty( $part['path'] ) && file_exists( $part['path'] ) ? hash_file( 'sha256', $part['path'] ) : '',
+				);
+			},
+			isset( $state['parts'] ) ? (array) $state['parts'] : array()
+		);
+		$payload['manifest']['database_rows_exported'] = isset( $state['rows_exported'] ) ? (int) $state['rows_exported'] : 0;
+		$payload['manifest']['tables']                 = isset( $state['tables'] ) ? (array) $state['tables'] : $this->database->get_tables();
+		$job['payload']                                = $payload;
+		$job['progress']                               = $done ? 30 : min( 29, 8 + (int) floor( 21 * ( (int) $state['table_index'] / $total ) ) );
+		$job['message']                                = $done ? __( 'Database export complete', 'backupflow' ) : __( 'Exporting database tables', 'backupflow' );
+		$job['step']                                   = $done ? ( $payload['include_files'] ? 'scan_files' : 'finalize' ) : 'database';
+
+		if ( $done ) {
+			$this->jobs->log( $job['id'], __( 'Database export added to the backup package.', 'backupflow' ), 'success' );
+		}
 		return $this->jobs->save( $job );
 	}
 
@@ -149,11 +175,14 @@ class BackupFlow_Backup_Manager {
 		$settings = backupflow_get_settings();
 		$excludes = preg_split( '/\r\n|\r|\n/', (string) $settings['exclude_paths'] );
 
-		$this->jobs->log( $job['id'], __( 'Scanning WordPress files and applying exclusions.', 'backupflow' ) );
-		$result = $this->files->build_file_list(
-			$payload['file_list'],
-			ABSPATH,
-			$excludes,
+		if ( empty( $payload['file_scan_state'] ) ) {
+			$payload['file_scan_state'] = $this->files->prepare_file_scan_state( $payload['file_list'], ABSPATH, $excludes );
+			$this->jobs->log( $job['id'], __( 'Scanning WordPress files and applying exclusions.', 'backupflow' ) );
+		}
+
+		$payload['file_scan_state'] = $this->files->scan_files_chunk(
+			$payload['file_scan_state'],
+			8,
 			function ( $count, $excluded ) use ( $job ) {
 				$this->jobs->log(
 					$job['id'],
@@ -167,22 +196,29 @@ class BackupFlow_Backup_Manager {
 			}
 		);
 
+		$result = $payload['file_scan_state'];
+		$done   = ! empty( $result['done'] );
 		$payload['file_total'] = (int) $result['total'];
 		$payload['excluded']   = (int) $result['excluded'];
+		$payload['manifest']['file_count'] = (int) $result['total'];
+		$payload['manifest']['excluded_files'] = (int) $result['excluded'];
+		$payload['manifest']['file_bytes_total'] = isset( $result['bytes_total'] ) ? (int) $result['bytes_total'] : 0;
 		$job['payload']        = $payload;
-		$job['progress']       = 36;
-		$job['message']        = __( 'File scan complete', 'backupflow' );
-		$job['step']           = $payload['file_total'] > 0 ? 'zip_files' : 'finalize';
+		$job['progress']       = $done ? 36 : 33;
+		$job['message']        = $done ? __( 'File scan complete', 'backupflow' ) : __( 'Scanning website files', 'backupflow' );
+		$job['step']           = $done ? ( $payload['file_total'] > 0 ? 'zip_files' : 'finalize' ) : 'scan_files';
 
-		$this->jobs->log(
-			$job['id'],
-			sprintf(
-				/* translators: 1: total files */
-				__( '%d files are ready to package.', 'backupflow' ),
-				$payload['file_total']
-			),
-			'success'
-		);
+		if ( $done ) {
+			$this->jobs->log(
+				$job['id'],
+				sprintf(
+					/* translators: 1: total files */
+					__( '%d files are ready to package.', 'backupflow' ),
+					$payload['file_total']
+				),
+				'success'
+			);
+		}
 
 		return $this->jobs->save( $job );
 	}
@@ -221,8 +257,12 @@ class BackupFlow_Backup_Manager {
 	private function finalize( $job ) {
 		$payload = $job['payload'];
 
-		if ( ! empty( $payload['include_db'] ) && file_exists( $payload['sql_path'] ) ) {
-			$this->files->add_file_to_zip( $payload['zip_path'], $payload['sql_path'], 'database.sql' );
+		if ( ! empty( $payload['include_db'] ) && ! empty( $payload['db_export_state']['parts'] ) ) {
+			foreach ( (array) $payload['db_export_state']['parts'] as $part ) {
+				if ( ! empty( $part['path'] ) && ! empty( $part['name'] ) && file_exists( $part['path'] ) ) {
+					$this->files->add_file_to_zip( $payload['zip_path'], $part['path'], $part['name'] );
+				}
+			}
 		}
 
 		$payload['manifest']['finished_gmt'] = gmdate( 'c' );
@@ -237,7 +277,38 @@ class BackupFlow_Backup_Manager {
 
 		$this->jobs->log( $job['id'], __( 'Backup archive finalized.', 'backupflow' ) );
 
-		$storage_result = $this->storage->adapter( $payload['destination'] )->upload( $payload['zip_path'], $payload['file_name'] );
+		$job['payload'] = $payload;
+		if ( 'local' !== $payload['destination'] ) {
+			$job['step']     = 'upload_remote';
+			$job['progress'] = 90;
+			$job['message']  = __( 'Uploading backup to remote storage', 'backupflow' );
+			$this->jobs->log( $job['id'], __( 'Backup archive is ready. Remote upload is starting.', 'backupflow' ) );
+			return $this->jobs->save( $job );
+		}
+
+		return $this->complete_backup( $job, $this->storage->adapter( 'local' )->upload( $payload['zip_path'], $payload['file_name'] ) );
+	}
+
+	private function upload_remote( $job ) {
+		$payload = $job['payload'];
+		$adapter = $this->storage->adapter( $payload['destination'] );
+
+		if ( method_exists( $adapter, 'upload_resumable' ) ) {
+			$result = $adapter->upload_resumable( $payload['zip_path'], $payload['file_name'], isset( $payload['remote_upload'] ) ? $payload['remote_upload'] : array(), 8 );
+			$payload['remote_upload'] = isset( $result['state'] ) ? $result['state'] : array();
+			$job['payload']           = $payload;
+			$job['progress']          = isset( $result['progress'] ) ? max( 90, min( 99, (int) $result['progress'] ) ) : 94;
+			$job['message']           = __( 'Uploading backup to remote storage', 'backupflow' );
+
+			if ( empty( $result['done'] ) ) {
+				return $this->jobs->save( $job );
+			}
+
+			$storage_result = isset( $result['remote'] ) ? $result['remote'] : array();
+		} else {
+			$storage_result = $adapter->upload( $payload['zip_path'], $payload['file_name'] );
+		}
+
 		if ( 'local' !== $payload['destination'] ) {
 			$this->jobs->log(
 				$job['id'],
@@ -249,6 +320,13 @@ class BackupFlow_Backup_Manager {
 				'success'
 			);
 		}
+
+		return $this->complete_backup( $job, $storage_result );
+	}
+
+	private function complete_backup( $job, $storage_result ) {
+		$payload = $job['payload'];
+		$size    = file_exists( $payload['zip_path'] ) ? filesize( $payload['zip_path'] ) : 0;
 
 		$record = array(
 			'id'            => $payload['backup_id'],
@@ -292,6 +370,7 @@ class BackupFlow_Backup_Manager {
 		return array(
 			'plugin'        => 'BackupFlow',
 			'version'       => BACKUPFLOW_VERSION,
+			'format_version'=> 2,
 			'backup_id'     => $backup_id,
 			'backup_type'   => $type,
 			'destination'   => $destination,
@@ -307,6 +386,8 @@ class BackupFlow_Backup_Manager {
 				'files'    => (bool) $include_files,
 				'database' => (bool) $include_db,
 			),
+			'database_parts'=> array(),
+			'file_count'    => 0,
 		);
 	}
 

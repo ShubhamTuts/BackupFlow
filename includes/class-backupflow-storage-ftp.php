@@ -42,26 +42,89 @@ class BackupFlow_Storage_FTP {
 	}
 
 	public function upload( $file_path, $remote_name = '' ) {
+		$result = $this->upload_resumable( $file_path, $remote_name, array(), 300 );
+		while ( empty( $result['done'] ) ) {
+			$result = $this->upload_resumable( $file_path, $remote_name, $result['state'], 300 );
+		}
+
+		return $result['remote'];
+	}
+
+	public function upload_resumable( $file_path, $remote_name = '', $state = array(), $time_budget = 8 ) {
 		if ( ! $this->configured() ) {
 			throw new RuntimeException( esc_html__( 'FTP is not configured.', 'backupflow' ) );
 		}
 
-		$conn = $this->connect();
+		if ( ! file_exists( $file_path ) || ! is_readable( $file_path ) ) {
+			throw new RuntimeException( esc_html__( 'The backup archive is missing before FTP upload.', 'backupflow' ) );
+		}
+
+		$state       = is_array( $state ) ? $state : array();
+		$size        = filesize( $file_path );
+		$remote_name = $remote_name ? basename( $remote_name ) : basename( $file_path );
+		$tmp_name    = isset( $state['tmp_name'] ) ? basename( $state['tmp_name'] ) : $remote_name . '.part';
+		$remote_path = trailingslashit( $this->settings['path'] ) . $remote_name;
+		$tmp_path    = trailingslashit( $this->settings['path'] ) . $tmp_name;
+		$offset      = isset( $state['offset'] ) ? (int) $state['offset'] : 0;
+		$conn        = $this->connect();
 		$this->ensure_remote_path( $conn, $this->settings['path'] );
 
-		$remote_name = $remote_name ? basename( $remote_name ) : basename( $file_path );
-		$remote_path = trailingslashit( $this->settings['path'] ) . $remote_name;
+		$remote_size = ftp_size( $conn, $tmp_path );
+		if ( $remote_size > 0 ) {
+			$offset = max( $offset, (int) $remote_size );
+		}
 
-		if ( ! ftp_put( $conn, $remote_path, $file_path, FTP_BINARY ) ) {
+		$stream = fopen( $file_path, 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+		if ( ! $stream ) {
+			ftp_close( $conn );
+			throw new RuntimeException( esc_html__( 'Could not read the backup archive for FTP upload.', 'backupflow' ) );
+		}
+
+		fseek( $stream, $offset );
+		$ret        = ftp_nb_fput( $conn, $tmp_path, $stream, FTP_BINARY, $offset );
+		$started_at = microtime( true );
+		while ( FTP_MOREDATA === $ret && microtime( true ) - $started_at < max( 2, (int) $time_budget ) ) {
+			$ret = ftp_nb_continue( $conn );
+		}
+
+		fclose( $stream ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+		$remote_size = ftp_size( $conn, $tmp_path );
+
+		if ( FTP_FAILED === $ret ) {
 			ftp_close( $conn );
 			throw new RuntimeException( esc_html__( 'Could not upload the backup to FTP.', 'backupflow' ) );
 		}
 
+		if ( $remote_size >= $size || FTP_FINISHED === $ret ) {
+			@ftp_delete( $conn, $remote_path ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+			if ( ! ftp_rename( $conn, $tmp_path, $remote_path ) ) {
+				ftp_close( $conn );
+				throw new RuntimeException( esc_html__( 'Could not finalize the FTP backup upload.', 'backupflow' ) );
+			}
+			ftp_close( $conn );
+			return array(
+				'done'     => true,
+				'progress' => 100,
+				'state'    => array(
+					'offset'   => $size,
+					'tmp_name' => $tmp_name,
+				),
+				'remote'   => array(
+					'storage' => 'ftp',
+					'path'    => $remote_path,
+					'name'    => $remote_name,
+				),
+			);
+		}
+
 		ftp_close( $conn );
 		return array(
-			'storage' => 'ftp',
-			'path'    => $remote_path,
-			'name'    => $remote_name,
+			'done'     => false,
+			'progress' => $size > 0 ? (int) floor( ( max( 0, (int) $remote_size ) / $size ) * 100 ) : 0,
+			'state'    => array(
+				'offset'   => max( 0, (int) $remote_size ),
+				'tmp_name' => $tmp_name,
+			),
 		);
 	}
 

@@ -5,136 +5,136 @@ Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 7.4
 Stable tag: 1.0.0
+Donate link: https://www.paypal.com/ncp/payment/EA96GMSSWBPAA
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Free WordPress backup, restore, and migration plugin with local backups, FTP upload, Google Drive storage, and one-click restore.
+Simple WordPress backup, restore, and migration plugin with local backups, FTP storage, Google Drive upload, one-click restore and more.
 
 == Description ==
 
-BackupFlow is an easy WordPress backup, restore, and migration plugin built for website owners, freelancers, agencies, and developers who want a clear backup workflow without complicated setup.
+BackupFlow is a clean and easy WordPress backup plugin for anyone who wants to protect, restore, or migrate a website without a complicated setup.
 
-Create complete WordPress backups, download backup ZIP files, restore compatible backups, move a website to a new domain, and store backup files on your website server, FTP server, or Google Drive using your own credentials.
+Create full website backups, database-only backups, or files-only backups directly from your WordPress dashboard. Store backups on your website server, upload them to FTP, or send them to Google Drive using your own Google credentials.
 
-BackupFlow is designed to make WordPress backup management simple:
+Whether you are updating plugins, changing themes, moving a site to a new host, or preparing a staging-to-live migration, BackupFlow gives you a simple backup workflow you can actually understand.
 
-* Create a full website backup before updates.
-* Back up only the WordPress database.
-* Back up only WordPress files.
-* Store backups locally on your server.
-* Upload backups to FTP.
-* Upload backups to Google Drive.
-* Restore compatible BackupFlow ZIP files.
-* Migrate a site by restoring a backup on a new domain.
-* Replace the old site URL with the current site URL during migration.
-* Track backup and restore progress from the WordPress dashboard.
+✨ **BackupFlow helps you back up your WordPress site before something goes wrong.**
 
-Whether you run a business website, blog, WooCommerce store, client website, local development site, staging website, or multisite-style workflow, BackupFlow helps you create safer backup points before making important changes.
+= Why BackupFlow? =
 
-BackupFlow gives WordPress users a simple backup system without forcing them into a complex dashboard. The plugin focuses on the core backup actions most site owners need every day: backup, download, restore, migrate, and store.
+Most website owners do not think about backups until a plugin update breaks the site, a theme change fails, a migration goes wrong, or a server issue causes data loss.
 
-= Why use BackupFlow? =
+BackupFlow is built to make backup and restore simple:
 
-Many WordPress backup plugins are difficult to configure, overloaded with settings, or confusing for non-technical users.
+* ✅ Create a backup before risky changes.
+* ✅ Restore a compatible BackupFlow ZIP when needed.
+* ✅ Move a WordPress website to another domain or host.
+* ✅ Store backup files locally, on FTP, or on Google Drive.
+* ✅ Follow live backup and restore progress inside WordPress.
+* ✅ Use a clean setup wizard instead of confusing settings.
 
-BackupFlow is built around a clean backup flow:
-
-1. Choose what to back up.
-2. Choose where to store it.
-3. Start the backup.
-4. Watch the live progress.
-5. Restore or migrate when needed.
-
-The goal is simple: help you protect your WordPress website before updates, plugin changes, theme edits, server changes, malware cleanup, or website migration.
+BackupFlow focuses on the core actions every WordPress site owner needs: **backup, download, restore, migrate, and store safely.**
 
 = Free WordPress backup plugin =
 
-BackupFlow includes the essential backup features site owners expect from a reliable WordPress backup plugin.
+BackupFlow includes practical backup features for WordPress websites, blogs, business sites, WooCommerce stores, landing pages, agency websites, and development sites.
 
 You can create:
 
-* Full website backups
-* Database-only backups
-* Files-only backups
+* 🗂️ Full website backups
+* 🧠 Database-only backups
+* 📁 Files-only backups
 
 You can store backups in:
 
-* Website server storage
-* FTP storage
-* Google Drive storage
+* 💻 Website server storage
+* 🌐 FTP storage
+* ☁️ Google Drive storage
 
 You can restore:
 
-* Compatible BackupFlow ZIP backups
-* Database backups
-* File backups
-* Full website backups
+* 🔁 Compatible BackupFlow ZIP files
+* 🧠 Database backups
+* 📁 Files backups
+* 🗂️ Full website backups
 
-You can also use BackupFlow for WordPress migration by restoring a BackupFlow backup on a new WordPress install and replacing the original site URL with the current site URL.
+You can also use BackupFlow for WordPress migration by restoring a backup on another WordPress installation and replacing the old site URL with the current site URL.
 
 = WordPress backup features =
 
-BackupFlow helps protect your website with practical backup tools:
+BackupFlow gives you the essential tools to protect your website:
 
 * Full WordPress website backup
 * WordPress database backup
 * WordPress files backup
-* Local backup storage
+* Local server backup storage
 * FTP backup upload
 * Google Drive backup upload
-* Backup ZIP archive generation
+* Backup ZIP archive creation
 * Backup download from WordPress admin
 * Backup delete option
 * Backup library inside WordPress
-* Live backup status
-* Backup progress logs
-* Admin dashboard
-* First-run setup wizard
-* Secure backup directory protection
-* Restore screen
-* Migration import screen
-* URL replacement during migration
+* Live backup progress
+* Backup status logs
+* Restore status logs
+* One-click restore for compatible backups
+* Migration restore screen
+* Source URL to current URL replacement
 * Serialized-aware database replacement
-* WordPress admin notices
-* Clean plugin settings flow
+* First-run welcome wizard
+* Clean WordPress admin dashboard
+* Storage settings for local, FTP, and Google Drive
+* Protective files inside backup storage folders
 
-= WordPress restore features =
+= WordPress restore made easier =
 
-BackupFlow includes one-click restore support for compatible BackupFlow backup archives.
+BackupFlow includes restore support for compatible BackupFlow backup files.
+
+Use BackupFlow restore when:
+
+* A plugin update breaks your website.
+* A theme change causes layout issues.
+* A custom code change creates an error.
+* A migration needs to be tested again.
+* A staging site needs to be restored.
+* A website needs to be moved to another host.
+* A backup needs to be imported on a new WordPress install.
 
 Restore features include:
 
 * Restore full website backups
 * Restore database backups
 * Restore files backups
-* Restore uploaded BackupFlow ZIP files
-* Restore from the backup library
-* Restore status tracking
-* Restore progress logs
+* Upload and restore compatible BackupFlow ZIP files
+* Restore directly from the backup library
 * Restore confirmation step
-* URL replacement for migration restores
-* Serialized data handling during database restore
+* Live restore progress
+* Restore logs
+* Migration URL replacement
+* Serialized-aware URL replacement during database restore
 
-BackupFlow is useful when you need to recover a site after a broken update, failed plugin change, theme issue, accidental file change, or migration test.
+⚠️ A restore can replace current website files and database content. For important production websites, test restore workflows on staging first.
 
-= WordPress migration features =
+= WordPress migration plugin =
 
-BackupFlow can help move a WordPress website from one domain to another.
+BackupFlow can help you move a WordPress website from one location to another.
 
-Common migration use cases:
+Common migration workflows include:
 
-* Move WordPress from staging to live.
-* Move WordPress from local development to production.
-* Move WordPress from an old domain to a new domain.
-* Move WordPress from one hosting provider to another.
-* Restore a client site on a new server.
-* Create a backup on one site and restore it on another WordPress installation.
+* Local site to live site
+* Staging site to production site
+* Old domain to new domain
+* Old host to new host
+* Client website handover
+* Development website to production
+* Backup transfer between WordPress installs
 
-During database restore, BackupFlow can replace the source website URL with the current website URL. This helps update internal links, media URLs, and saved WordPress content during migration.
+During migration restore, BackupFlow can replace the source site URL with the current WordPress site URL. This helps update links, media paths, internal URLs, and saved WordPress content during the migration process.
 
-BackupFlow uses serialized-aware replacement during database restore, which is important for WordPress because themes, plugins, widgets, page builders, and settings often store serialized data inside the database.
+BackupFlow also uses serialized-aware replacement, which matters because WordPress themes, plugins, widgets, page builders, and settings often store serialized data inside the database.
 
-= Local backup storage =
+= Local WordPress backups =
 
 BackupFlow can store backup files directly on your WordPress server.
 
@@ -142,194 +142,182 @@ Local backups are stored in:
 
 `wp-content/backupflow/backups`
 
-BackupFlow also creates protective files in its storage directories to help prevent direct directory browsing.
+BackupFlow creates protective files such as `index.php` and `.htaccess` in its storage directories.
 
-Local backups are useful when you want quick access to backup files before updating WordPress core, plugins, themes, WooCommerce, or custom code.
+Local backup storage is useful when you want a quick restore point before making changes to your website.
 
-For best protection, download important backup files to your computer or send them to remote storage.
+For better protection, keep important backup copies outside the website server as well.
 
 = FTP backup storage =
 
 BackupFlow supports FTP backup upload.
 
-FTP storage is useful when you want to keep a copy of your WordPress backup outside the main website server.
+FTP storage is useful when you want to keep a backup copy away from the main website server.
 
-Typical FTP backup uses:
+Use FTP backup storage to:
 
 * Store backups on another hosting account.
 * Store backups on a private backup server.
-* Keep a remote copy of important WordPress files.
-* Maintain off-site backups for client websites.
-* Move backups between servers.
+* Move backup files between servers.
+* Keep off-site backup copies.
+* Maintain client backup archives.
+* Prepare backup files for migration.
 
-You can configure FTP credentials from the BackupFlow storage settings screen.
+You can configure FTP connection details from the BackupFlow storage settings screen.
 
 = Google Drive backup storage =
 
-BackupFlow supports Google Drive storage using your own Google OAuth credentials.
+BackupFlow supports Google Drive backup upload using your own Google OAuth credentials.
 
-You can connect Google Drive by providing:
+To connect Google Drive, you can use:
 
 * Google Client ID
 * Google Client Secret
-* Refresh token from the Google Drive connection flow
-
-This gives site owners control over their own Google Drive connection and backup destination.
+* Google refresh token
 
 Google Drive storage is useful for:
 
-* Off-site WordPress backups
-* Client backup workflows
+* Off-site WordPress backup storage
 * Personal backup archives
-* Safer backup storage outside the website server
+* Client backup workflows
 * Migration backup transfer
+* Safer storage outside your hosting account
+
+This gives you control over your own Google Drive connection instead of locking backups inside a third-party system.
 
 = Backup before WordPress updates =
 
-BackupFlow is especially useful before making important website changes.
+Before updating WordPress, WooCommerce, plugins, themes, or page builders, create a backup.
 
-Create a backup before:
+BackupFlow is useful before:
 
 * Updating WordPress core
 * Updating WooCommerce
 * Updating plugins
 * Updating themes
-* Editing theme files
 * Installing a new plugin
 * Changing page builder layouts
+* Editing theme files
 * Importing demo content
 * Migrating hosting
 * Changing domain names
 * Cleaning malware
 * Testing custom code
 * Making database changes
+* Updating checkout or payment settings
 
 A fresh backup gives you a safer rollback point if something breaks.
 
-= Backup for WooCommerce sites =
+= WooCommerce backup support =
 
-WooCommerce websites need careful backup handling because they store products, orders, customers, settings, coupons, shipping rules, tax rules, and payment settings inside WordPress.
+WooCommerce stores contain important business data such as products, customers, orders, coupons, payments, shipping settings, tax settings, and checkout configuration.
 
-BackupFlow can create full website backups or database-only backups before you update WooCommerce, install payment plugins, change checkout settings, edit product data, or modify store design.
+BackupFlow can create full website backups or database-only backups before you make WooCommerce changes.
 
-For busy WooCommerce stores, always consider the timing of your backup and restore process because new orders and customer activity can happen while changes are being made.
+Use BackupFlow before:
 
-= Backup for agencies and freelancers =
+* Updating WooCommerce
+* Updating payment plugins
+* Changing checkout settings
+* Importing products
+* Editing product data
+* Updating shipping rules
+* Changing tax settings
+* Testing conversion plugins
+* Migrating a WooCommerce store
 
-BackupFlow is useful for agencies, freelancers, and WordPress service providers who manage multiple client websites.
+For active WooCommerce stores, choose backup and restore timing carefully because new orders and customer data may be created after the backup is taken.
+
+= Built for agencies and freelancers =
+
+BackupFlow is also useful for WordPress agencies, freelancers, maintenance teams, and developers managing client websites.
 
 Use BackupFlow to:
 
 * Create a backup before client revisions.
-* Create a backup before plugin updates.
+* Download a full backup before handover.
 * Move a client site from staging to live.
-* Download a full ZIP backup before handover.
-* Store backup copies on FTP or Google Drive.
-* Keep a simple backup workflow inside WordPress.
-* Restore a compatible backup when testing changes.
+* Keep a backup before plugin updates.
+* Store client backups on FTP or Google Drive.
+* Restore compatible backups during testing.
+* Give clients a simple backup dashboard.
 
-BackupFlow keeps the interface simple enough for clients while still giving developers useful backup and migration controls.
+BackupFlow keeps the workflow simple enough for non-technical users while still offering useful restore and migration controls.
 
-= Backup for staging and development =
+= Simple setup wizard =
 
-BackupFlow can help developers and site builders move websites between local, staging, and live environments.
+BackupFlow includes a first-run welcome wizard after activation.
 
-Common workflows:
+The setup flow helps you:
 
-* Local to staging
-* Staging to production
-* Production to staging
-* Old host to new host
-* Old domain to new domain
+1. Choose what you want to back up.
+2. Choose where you want to store the backup.
+3. Start your first backup.
+4. Watch live backup progress.
+5. Manage backups from the backup library.
 
-The migration restore flow helps replace the original site URL with the current site URL during database restore.
+No confusing setup. No heavy dashboard. Just a clean backup flow.
 
-= Simple backup dashboard =
+= Backup types explained =
 
-BackupFlow includes a clean WordPress admin experience designed around the backup process.
+**Full website backup**
 
-The dashboard includes:
+A full backup includes your WordPress database and website files. Use this before major updates, migrations, theme changes, WooCommerce changes, or client handovers.
 
-* Backup creation options
-* Storage selection
-* Backup type selection
-* Backup progress status
-* Backup logs
-* Backup library
-* Restore actions
-* Download actions
-* Delete actions
-* Storage settings
-* Migration restore screen
-* First-run wizard
+**Database-only backup**
 
-The plugin is built to reduce confusion and help users complete the backup process quickly.
+A database backup includes WordPress content and settings stored in the database, such as posts, pages, users, options, plugin settings, WooCommerce data, and page builder content.
 
-= Backup types =
+**Files-only backup**
 
-BackupFlow supports three main backup types.
+A files backup includes WordPress files such as uploads, media files, themes, plugins, and other site files.
 
-Full website backup:
+= Safer backup habits =
 
-* WordPress database
-* WordPress files
-* Uploads
-* Themes
-* Plugins
-* Core WordPress files where applicable
-* Backup metadata needed for restore
+BackupFlow gives you backup tools inside WordPress, but good backup habits are still important.
 
-Database-only backup:
+Recommended backup practices:
 
-* WordPress database export
-* Posts
-* Pages
-* Products
-* Orders
-* Users
-* Settings
-* Plugin options
-* Theme options
-* Page builder content
-* WordPress configuration data stored in the database
-
-Files-only backup:
-
-* WordPress files
-* Uploads
-* Themes
-* Plugins
-* Media files
-* Site assets
-
-Choose the backup type based on the change you are about to make.
-
-= Security-focused backup handling =
-
-BackupFlow stores local backup archives inside its own plugin storage directory and adds protective files to storage folders.
-
-The plugin is designed to keep backup management inside the WordPress admin area and avoid exposing backup actions to public visitors.
-
-Recommended best practices:
-
-* Download important backups to your local computer.
-* Keep remote backup copies when possible.
-* Do not rely only on the same server for critical backups.
-* Delete old backup files you no longer need.
-* Keep WordPress, plugins, and themes updated.
+* Keep more than one backup copy.
+* Store important backups off-site.
+* Download important backups to your computer.
+* Create a backup before every major update.
 * Test restore workflows on staging when possible.
+* Delete old backups you no longer need.
+* Make sure your server has enough free storage.
+* Avoid restoring on a live WooCommerce store during active order activity unless you understand the impact.
+
+= Hosting limits note =
+
+BackupFlow does not intentionally limit how many manual backups you create, but backup success can depend on your hosting environment.
+
+Large websites may be affected by:
+
+* PHP memory limit
+* PHP execution time
+* Disk space
+* File permissions
+* Server timeout rules
+* Upload limits
+* FTP connection limits
+* Database size
+* Hosting security rules
+
+If your website is very large, make sure your hosting account has enough resources before starting a backup.
 
 = Documentation =
 
-Documentation and setup guides are available at:
+Need setup help?
 
-https://themefreex.com/backupflow/
+Read the BackupFlow documentation here:
 
-The documentation explains setup, storage configuration, backup creation, restore, migration, FTP connection, Google Drive connection, and recommended backup practices.
+[BackupFlow Documentation](https://themefreex.com/backupflow/)
+
+The documentation covers backup setup, restore, migration, FTP storage, Google Drive connection, local backups, and recommended backup workflows.
 
 = Who should use BackupFlow? =
 
-BackupFlow is built for:
+BackupFlow is useful for:
 
 * WordPress site owners
 * WooCommerce store owners
@@ -338,15 +326,16 @@ BackupFlow is built for:
 * Freelancers
 * Developers
 * Website maintenance teams
-* Hosting support teams
 * Local business websites
-* SaaS marketing websites
-* Landing page websites
 * Client websites
 * Staging websites
 * Development websites
+* Landing page websites
+* Business websites
+* Content websites
+* Portfolio websites
 
-Use BackupFlow when you need a straightforward WordPress backup, restore, and migration plugin that keeps the workflow simple.
+Use BackupFlow when you want a simple WordPress backup, restore, and migration plugin without unnecessary complexity.
 
 = What can BackupFlow help with? =
 
@@ -358,32 +347,25 @@ BackupFlow can help with:
 * Website backup
 * Website restore
 * Website migration
-* WordPress database backup
-* WordPress files backup
+* Database backup
+* Files backup
+* Full site backup
 * WooCommerce backup
 * FTP backup
 * Google Drive backup
-* Local backup
+* Local server backup
 * Staging to live migration
 * Domain migration
 * Hosting migration
-* Backup download
-* Backup ZIP creation
+* Backup ZIP download
 * Restore after failed update
-* Restore after broken plugin change
-* Backup before theme changes
-
-= Important restore note =
-
-Before restoring any backup, make sure you understand what the restore will replace.
-
-A restore can overwrite current website files and database content. If your current site has new orders, new users, new form entries, or new content after the backup was created, those changes may be replaced during restore.
-
-For important production websites, test restore and migration workflows on a staging environment first.
+* Restore after plugin issue
+* Backup before theme change
+* Backup before WooCommerce update
 
 == Installation ==
 
-= Automatic installation =
+= Install from WordPress dashboard =
 
 1. Log in to your WordPress dashboard.
 2. Go to Plugins > Add New.
@@ -405,7 +387,7 @@ For important production websites, test restore and migration workflows on a sta
 6. Click Install Now.
 7. Click Activate.
 8. Open BackupFlow from the WordPress admin menu.
-9. Complete the first-run setup wizard.
+9. Complete the setup wizard.
 10. Create your first backup.
 
 = FTP installation =
@@ -414,15 +396,15 @@ For important production websites, test restore and migration workflows on a sta
 2. Log in to your WordPress dashboard.
 3. Go to Plugins.
 4. Activate BackupFlow.
-5. Open the setup wizard.
+5. Open BackupFlow from the WordPress admin menu.
 6. Configure your preferred backup storage.
 7. Create your first backup.
 
 == Frequently Asked Questions ==
 
-= What does BackupFlow do? =
+= What is BackupFlow? =
 
-BackupFlow helps you back up, restore, and migrate WordPress websites. You can create full website backups, database-only backups, or files-only backups, then store them locally, upload them to FTP, or upload them to Google Drive.
+BackupFlow is a WordPress backup, restore, and migration plugin. It helps you create full website backups, database-only backups, files-only backups, restore compatible backups, and migrate WordPress websites.
 
 = Is BackupFlow free? =
 
@@ -430,15 +412,15 @@ Yes. BackupFlow is a free WordPress backup, restore, and migration plugin.
 
 = Can I create a full WordPress website backup? =
 
-Yes. BackupFlow can create a full website backup that includes the WordPress database and website files.
+Yes. BackupFlow can create a full website backup that includes your WordPress database and website files.
 
 = Can I create a database-only backup? =
 
-Yes. BackupFlow includes database-only backup support. This is useful before changing content, settings, WooCommerce data, page builder content, plugin options, or theme options.
+Yes. BackupFlow supports database-only backups. This is useful before content changes, WooCommerce changes, settings changes, or database-level updates.
 
 = Can I create a files-only backup? =
 
-Yes. BackupFlow includes files-only backup support. This is useful before changing themes, plugins, uploads, media files, or custom code.
+Yes. BackupFlow supports files-only backups. This is useful before changing themes, plugins, uploads, media files, or custom code.
 
 = Where are local backups stored? =
 
@@ -446,31 +428,31 @@ Local backups are stored in:
 
 `wp-content/backupflow/backups`
 
-BackupFlow creates protective `index.php` and `.htaccess` files in its storage directories.
+BackupFlow also creates protective `index.php` and `.htaccess` files in its storage directories.
 
 = Can I download backup files? =
 
-Yes. BackupFlow includes a backup library where you can manage compatible backup files, including download actions when available.
+Yes. BackupFlow includes a backup library where compatible backup files can be managed and downloaded.
 
-= Can I delete old backups? =
+= Can I delete old backup files? =
 
-Yes. BackupFlow allows you to delete backup files from the backup library.
+Yes. You can delete backup files from the BackupFlow backup library.
 
 = Does BackupFlow support FTP backups? =
 
-Yes. BackupFlow supports FTP backup upload using your FTP credentials.
+Yes. BackupFlow supports FTP backup upload using your own FTP credentials.
 
 = Does BackupFlow support Google Drive backups? =
 
-Yes. BackupFlow supports Google Drive backup upload using user-provided Google OAuth credentials.
+Yes. BackupFlow supports Google Drive backup upload using your own Google OAuth credentials.
 
 = Can Google Drive work without a Google OAuth app? =
 
-No. Google Drive connection requires a Google Client ID, Client Secret, and refresh token generated through the Google Drive connection flow.
+No. Google Drive connection requires a Google Client ID, Client Secret, and refresh token from the Google Drive connection flow.
 
-= Does BackupFlow support one-click restore? =
+= Does BackupFlow support restore? =
 
-Yes. BackupFlow supports one-click restore for compatible BackupFlow ZIP backup files.
+Yes. BackupFlow supports restore for compatible BackupFlow ZIP backup files.
 
 = Can I upload a backup ZIP and restore it? =
 
@@ -478,11 +460,11 @@ Yes. BackupFlow includes a restore and migration import screen for compatible Ba
 
 = Can I migrate a WordPress website with BackupFlow? =
 
-Yes. You can create a backup from one WordPress website, install BackupFlow on another WordPress website, upload the compatible backup ZIP, and run the restore process.
+Yes. Create a backup on the source website, install BackupFlow on the destination WordPress website, upload the compatible BackupFlow backup ZIP, and run the restore process.
 
 = Does BackupFlow replace the old domain during migration? =
 
-Yes. During migration restore, BackupFlow can replace the source site URL with the current site URL.
+Yes. During migration restore, BackupFlow can replace the source website URL with the current website URL.
 
 = Does BackupFlow handle serialized data replacement? =
 
@@ -490,68 +472,68 @@ Yes. During database restore, BackupFlow uses serialized-aware replacement when 
 
 = Can I use BackupFlow before updating WordPress? =
 
-Yes. BackupFlow is useful before updating WordPress core, plugins, themes, WooCommerce, or page builder plugins.
+Yes. BackupFlow is useful before updating WordPress core, plugins, themes, WooCommerce, page builders, or custom code.
 
 = Can I use BackupFlow for WooCommerce backups? =
 
-Yes. BackupFlow can back up WordPress websites that use WooCommerce. For active stores, choose backup and restore timing carefully because new orders may be created after the backup is taken.
+Yes. BackupFlow can back up WordPress websites that use WooCommerce. For active stores, be careful when restoring because new orders or customer data created after the backup may be replaced.
 
 = Can I use BackupFlow on staging websites? =
 
-Yes. BackupFlow is useful for staging websites, test websites, development websites, and local-to-live migration workflows.
+Yes. BackupFlow is useful for staging websites, local development websites, test websites, and staging-to-live workflows.
 
-= Can I use BackupFlow to move from one host to another? =
+= Can I move my website to another host with BackupFlow? =
 
-Yes. BackupFlow can help move a WordPress site between hosting providers by creating a backup on the source site and restoring it on the destination WordPress installation.
+Yes. BackupFlow can help move a WordPress site between hosting providers by creating a backup on the source website and restoring it on the destination WordPress installation.
 
-= Does BackupFlow remove backups when I uninstall the plugin? =
+= Does uninstall delete my backup files? =
 
 No. Uninstall removes plugin options and job records only. Backup archives are intentionally preserved to help avoid accidental data loss.
 
 = Does BackupFlow protect the backup directory? =
 
-BackupFlow creates protective files such as `index.php` and `.htaccess` in its storage directories.
+BackupFlow creates protective files such as `index.php` and `.htaccess` inside its storage directories.
 
-= What PHP version is required? =
+= What PHP version does BackupFlow require? =
 
 BackupFlow requires PHP 7.4 or higher.
 
-= What WordPress version is required? =
+= What WordPress version does BackupFlow require? =
 
 BackupFlow requires WordPress 6.5 or higher.
 
-= What is the tested WordPress version? =
+= What WordPress version is BackupFlow tested with? =
 
 BackupFlow is tested up to WordPress 7.0.
 
 = Does BackupFlow work with page builders? =
 
-BackupFlow backs up WordPress files and database content. Page builder layouts are usually stored inside the WordPress database and uploads directory, so they are included when you create a full backup.
+BackupFlow backs up WordPress database content and website files. Page builder layouts are usually stored in the database and uploads directory, so they are included when you create a full backup.
 
-= Should I test restore before using it on a live website? =
+= What should I do before restoring a backup? =
 
-Yes. For important production websites, testing restore on a staging environment is recommended before restoring on the live site.
+Before restoring, make sure you understand what the restore will replace. A restore can overwrite current files and database content. For important websites, test restore on staging first.
 
-= What happens if my website has very large files? =
+= What happens if my website is very large? =
 
-Backup success can depend on hosting limits such as PHP execution time, memory limit, disk space, file permissions, and server configuration. For large websites, make sure your server has enough available resources before starting a backup.
+Backup success can depend on your hosting limits, server resources, available disk space, database size, file permissions, and timeout settings. Make sure your hosting environment has enough resources before starting a large backup.
 
 = Why should I keep remote backups? =
 
-Local backups are useful, but if your website server fails, local backup files may also become unavailable. FTP and Google Drive storage help keep backup copies outside the main WordPress server.
+Local backups are helpful, but if the website server fails, local backup files may also become unavailable. FTP and Google Drive storage help keep backup copies outside the main website server.
 
-= Where can I find documentation? =
+= Where can I find BackupFlow documentation? =
 
-BackupFlow documentation is available at:
+You can read the documentation here:
 
-https://themefreex.com/backupflow/
+[BackupFlow Documentation](https://themefreex.com/backupflow/)
 
 == Screenshots ==
 
-1. BackupFlow welcome wizard for creating the first WordPress backup.
-2. Live backup progress modal with real-time backup status and logs.
+1. BackupFlow welcome wizard for creating your first WordPress backup.
+2. Live backup progress modal with backup status and logs.
 3. Backup library with restore, download, and delete actions.
-4. Restore and migrate import screen for compatible BackupFlow ZIP files.
+4. Restore and migration import screen for compatible BackupFlow ZIP files.
 5. Storage settings for Website Server, FTP, and Google Drive.
 
 == Changelog ==

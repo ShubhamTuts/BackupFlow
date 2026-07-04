@@ -25,7 +25,8 @@ class BackupFlow_Migrator {
 		backupflow_ensure_storage_dirs();
 		$destination = trailingslashit( backupflow_backups_dir() ) . sanitize_file_name( 'imported-' . gmdate( 'Ymd-His' ) . '-' . $name );
 
-		if ( ! backupflow_copy_file( $source_path, $destination ) ) {
+		$moved = @rename( $source_path, $destination ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.rename_rename
+		if ( ! $moved && ! backupflow_copy_file( $source_path, $destination ) ) {
 			throw new RuntimeException( esc_html__( 'Could not move the uploaded backup into BackupFlow storage.', 'backupflow' ) );
 		}
 

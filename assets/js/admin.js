@@ -6,6 +6,7 @@
 	var jobFinished = false;
 	var jobCancelled = false;
 	var activeUploadRequest = null;
+	var currentImportId = null;
 
 	function post(action, data) {
 		return $.post(BackupFlowAdmin.ajaxUrl, $.extend({
@@ -54,6 +55,7 @@
 		jobFinished = false;
 		jobCancelled = false;
 		activeUploadRequest = null;
+		currentImportId = null;
 		$modal.find('#backupflow-modal-title').text(title || BackupFlowAdmin.strings.working);
 		$modal.find('[data-job-message]').text(BackupFlowAdmin.strings.working);
 		$modal.find('.backupflow-progress span').css('width', '0%');
@@ -98,7 +100,7 @@
 			}
 
 			if (!response || !response.success || !response.data.job) {
-				finishModal(false, 'Process failed.');
+				finishModal(false, BackupFlowAdmin.strings.processFailed || 'BackupFlow could not finish this process. Please try again.');
 				return;
 			}
 
@@ -124,7 +126,11 @@
 				processJob(jobId);
 			}, 500);
 		}).fail(function (xhr) {
-			var message = 'Process failed.';
+			if (jobCancelled) {
+				return;
+			}
+
+			var message = BackupFlowAdmin.strings.processFailed || 'BackupFlow could not finish this process. Please try again.';
 			if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
 				message = xhr.responseJSON.data.message;
 			}
@@ -160,6 +166,11 @@
 			activeUploadRequest = null;
 		}
 
+		if (currentImportId) {
+			post('backupflow_cancel_import', { import_id: currentImportId });
+			currentImportId = null;
+		}
+
 		if (currentJobId) {
 			post('backupflow_cancel_job', { job_id: currentJobId });
 		}
@@ -175,32 +186,57 @@
 		$modal.find('.backupflow-progress strong').text(progress + '%');
 	}
 
-	function uploadAndRestore(file, restoreMode) {
-		var formData = new FormData();
-		var request = new XMLHttpRequest();
+	function preflightMessage(response, fallback) {
+		var preflight = response && response.data && response.data.preflight ? response.data.preflight : null;
+		var lines = [];
 
-		if (!file) {
-			window.alert(BackupFlowAdmin.strings.chooseBackup || 'Choose a backup ZIP first.');
-			return;
+		if (preflight && preflight.message) {
+			lines.push(preflight.message);
 		}
 
-		openModal(BackupFlowAdmin.strings.uploading || 'Uploading backup');
-		setUploadProgress(0, BackupFlowAdmin.strings.uploading || 'Uploading backup');
+		if (preflight && preflight.checks) {
+			preflight.checks.forEach(function (check) {
+				if (check.status !== 'ready') {
+					lines.push(check.label + ': ' + check.message);
+				}
+			});
+		}
 
-		formData.append('action', 'backupflow_import_backup');
+		return lines.length ? lines.join('\n') : fallback;
+	}
+
+	function runPreflight(context, destination, fileSize, backupType) {
+		return post('backupflow_preflight', {
+			context: context || 'backup',
+			destination: destination || 'local',
+			file_size: fileSize || 0,
+			backup_type: backupType || 'full'
+		});
+	}
+
+	function uploadChunk(importId, file, chunkSize, index, offset, restoreMode, retryCount) {
+		var end = Math.min(file.size, offset + chunkSize);
+		var formData = new FormData();
+		var request = new XMLHttpRequest();
+		retryCount = retryCount || 0;
+
+		formData.append('action', 'backupflow_upload_chunk');
 		formData.append('nonce', BackupFlowAdmin.nonce);
-		formData.append('backupflow_import', file);
+		formData.append('import_id', importId);
+		formData.append('chunk_index', index);
+		formData.append('chunk', file.slice(offset, end), file.name + '.part');
 
 		activeUploadRequest = request;
 		request.upload.addEventListener('progress', function (event) {
-			if (!event.lengthComputable) {
+			if (!event.lengthComputable || !file.size) {
 				return;
 			}
-			setUploadProgress(Math.round((event.loaded / event.total) * 100), BackupFlowAdmin.strings.uploading || 'Uploading backup');
+			setUploadProgress(Math.round(((offset + event.loaded) / file.size) * 100), BackupFlowAdmin.strings.uploading || 'Uploading backup');
 		});
 
 		request.onreadystatechange = function () {
 			var response;
+			var nextOffset;
 
 			if (request.readyState !== 4 || jobCancelled) {
 				return;
@@ -208,29 +244,88 @@
 
 			activeUploadRequest = null;
 
-			if (request.status < 200 || request.status >= 300) {
-				finishModal(false, 'Backup upload failed.');
-				return;
-			}
-
 			try {
 				response = JSON.parse(request.responseText);
 			} catch (error) {
-				finishModal(false, 'Backup upload failed.');
+				finishModal(false, BackupFlowAdmin.strings.uploadFailed || 'Backup upload failed. Choose a valid BackupFlow ZIP and try again.');
 				return;
 			}
 
-			if (!response || !response.success || !response.data || !response.data.backup) {
-				finishModal(false, response && response.data && response.data.message ? response.data.message : 'Backup upload failed.');
+			if (request.status < 200 || request.status >= 300 || !response || !response.success) {
+				if (retryCount < 3) {
+					window.setTimeout(function () {
+						uploadChunk(importId, file, chunkSize, index, offset, restoreMode, retryCount + 1);
+					}, 900);
+					return;
+				}
+				finishModal(false, response && response.data && response.data.message ? response.data.message : BackupFlowAdmin.strings.uploadFailed || 'Backup upload failed. Choose a valid BackupFlow ZIP and try again.');
+				return;
+			}
+
+			nextOffset = response.data && response.data.received ? parseInt(response.data.received, 10) : end;
+			if (nextOffset < file.size) {
+				uploadChunk(importId, file, chunkSize, index + 1, nextOffset, restoreMode, 0);
 				return;
 			}
 
 			setUploadProgress(100, BackupFlowAdmin.strings.uploadComplete || 'Backup uploaded. Starting restore...');
-			startRestore(response.data.backup.id, restoreMode, true);
+			post('backupflow_complete_import', {
+				import_id: importId
+			}).done(function (completeResponse) {
+				if (!completeResponse || !completeResponse.success || !completeResponse.data.backup) {
+					finishModal(false, BackupFlowAdmin.strings.uploadFailed || 'Backup upload failed. Choose a valid BackupFlow ZIP and try again.');
+					return;
+				}
+				currentImportId = null;
+				startRestore(completeResponse.data.backup.id, restoreMode, true);
+			}).fail(function (xhr) {
+				var message = BackupFlowAdmin.strings.uploadFailed || 'Backup upload failed. Choose a valid BackupFlow ZIP and try again.';
+				if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
+					message = xhr.responseJSON.data.message;
+				}
+				finishModal(false, message);
+			});
 		};
 
 		request.open('POST', BackupFlowAdmin.ajaxUrl, true);
 		request.send(formData);
+	}
+
+	function uploadAndRestore(file, restoreMode) {
+		if (!file) {
+			window.alert(BackupFlowAdmin.strings.chooseBackup || 'Choose a backup ZIP first.');
+			return;
+		}
+
+		openModal(BackupFlowAdmin.strings.importPreparing || 'Preparing secure upload');
+		setUploadProgress(0, BackupFlowAdmin.strings.importPreparing || 'Preparing secure upload');
+
+		runPreflight('import', 'local', file.size || 0).done(function (preflightResponse) {
+			if (!preflightResponse || !preflightResponse.success || !preflightResponse.data.preflight || !preflightResponse.data.preflight.ready) {
+				finishModal(false, preflightMessage(preflightResponse, BackupFlowAdmin.strings.preflightFailed || 'BackupFlow needs attention before this job can run.'));
+				return;
+			}
+
+			post('backupflow_start_import', {
+				file_name: file.name,
+				file_size: file.size || 0
+			}).done(function (response) {
+				if (!response || !response.success || !response.data.import_id) {
+					finishModal(false, BackupFlowAdmin.strings.uploadFailed || 'Backup upload failed. Choose a valid BackupFlow ZIP and try again.');
+					return;
+				}
+				currentImportId = response.data.import_id;
+				uploadChunk(response.data.import_id, file, response.data.chunk_size || (4 * 1024 * 1024), 0, response.data.received || 0, restoreMode, 0);
+			}).fail(function (xhr) {
+				var message = BackupFlowAdmin.strings.uploadFailed || 'Backup upload failed. Choose a valid BackupFlow ZIP and try again.';
+				if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
+					message = xhr.responseJSON.data.message;
+				}
+				finishModal(false, message);
+			});
+		}).fail(function (xhr) {
+			finishModal(false, preflightMessage(xhr.responseJSON, BackupFlowAdmin.strings.preflightFailed || 'BackupFlow needs attention before this job can run.'));
+		});
 	}
 
 	function initTables() {
@@ -325,52 +420,88 @@
 			return;
 		}
 
-		openModal('Backup in progress');
-		post('backupflow_start_backup', {
-			backup_type: type,
-			destination: destination || 'local'
-		}).done(function (response) {
-			if (!response || !response.success || !response.data.job) {
-				finishModal(false, 'Could not start backup.');
+		openModal('Checking backup readiness');
+		runPreflight('backup', destination || 'local', 0, type).done(function (preflightResponse) {
+			if (!preflightResponse || !preflightResponse.success || !preflightResponse.data.preflight || !preflightResponse.data.preflight.ready) {
+				finishModal(false, preflightMessage(preflightResponse, BackupFlowAdmin.strings.preflightFailed || 'BackupFlow needs attention before this job can run.'));
 				return;
 			}
 
-			currentJobId = response.data.job.id;
-			renderJob(response.data.job);
-			processJob(currentJobId);
+			$('.backupflow-modal').find('#backupflow-modal-title').text('Backup in progress');
+			post('backupflow_start_backup', {
+				backup_type: type,
+				destination: destination || 'local'
+			}).done(function (response) {
+				if (jobCancelled) {
+					return;
+				}
+
+				if (!response || !response.success || !response.data.job) {
+					finishModal(false, BackupFlowAdmin.strings.backupFailed || 'BackupFlow could not start the backup. Please try again.');
+					return;
+				}
+
+				currentJobId = response.data.job.id;
+				renderJob(response.data.job);
+				processJob(currentJobId);
+			}).fail(function (xhr) {
+				if (jobCancelled) {
+					return;
+				}
+
+				var message = BackupFlowAdmin.strings.backupFailed || 'BackupFlow could not start the backup. Please try again.';
+				if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
+					message = xhr.responseJSON.data.message;
+				}
+				finishModal(false, message);
+			});
 		}).fail(function (xhr) {
-			var message = 'Could not start backup.';
-			if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
-				message = xhr.responseJSON.data.message;
-			}
-			finishModal(false, message);
+			finishModal(false, preflightMessage(xhr.responseJSON, BackupFlowAdmin.strings.preflightFailed || 'BackupFlow needs attention before this job can run.'));
 		});
 	}
 
 	function startRestore(backupId, restoreMode, keepModal) {
 		if (!keepModal) {
-			openModal('Restore in progress');
+			openModal('Checking restore readiness');
 		} else {
 			$('.backupflow-modal').find('#backupflow-modal-title').text('Restore in progress');
 		}
-		post('backupflow_start_restore', {
-			backup_id: backupId,
-			restore_mode: restoreMode || 'full'
-		}).done(function (response) {
-			if (!response || !response.success || !response.data.job) {
-				finishModal(false, 'Could not start restore.');
+		runPreflight('restore', 'local').done(function (preflightResponse) {
+			if (!preflightResponse || !preflightResponse.success || !preflightResponse.data.preflight || !preflightResponse.data.preflight.ready) {
+				finishModal(false, preflightMessage(preflightResponse, BackupFlowAdmin.strings.preflightFailed || 'BackupFlow needs attention before this job can run.'));
 				return;
 			}
 
-			currentJobId = response.data.job.id;
-			renderJob(response.data.job);
-			processJob(currentJobId);
+			$('.backupflow-modal').find('#backupflow-modal-title').text('Restore in progress');
+			post('backupflow_start_restore', {
+				backup_id: backupId,
+				restore_mode: restoreMode || 'full'
+			}).done(function (response) {
+				if (jobCancelled) {
+					return;
+				}
+
+				if (!response || !response.success || !response.data.job) {
+					finishModal(false, BackupFlowAdmin.strings.restoreFailed || 'BackupFlow could not start the restore. Please try again.');
+					return;
+				}
+
+				currentJobId = response.data.job.id;
+				renderJob(response.data.job);
+				processJob(currentJobId);
+			}).fail(function (xhr) {
+				if (jobCancelled) {
+					return;
+				}
+
+				var message = BackupFlowAdmin.strings.restoreFailed || 'BackupFlow could not start the restore. Please try again.';
+				if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
+					message = xhr.responseJSON.data.message;
+				}
+				finishModal(false, message);
+			});
 		}).fail(function (xhr) {
-			var message = 'Could not start restore.';
-			if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
-				message = xhr.responseJSON.data.message;
-			}
-			finishModal(false, message);
+			finishModal(false, preflightMessage(xhr.responseJSON, BackupFlowAdmin.strings.preflightFailed || 'BackupFlow needs attention before this job can run.'));
 		});
 	}
 

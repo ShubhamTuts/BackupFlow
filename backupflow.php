@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       BackupFlow – Easy Backup, Restore & Migration for WordPress
+ * Plugin Name:       BackupFlow - Easy Backup, Restore & Migration for WordPress
  * Plugin URI:        https://themefreex.com/backupflow/
  * Description:       Simple branded backups, one-click restore, and migration for WordPress with local, FTP, and Google Drive storage.
  * Version:           1.0.0
@@ -36,6 +36,7 @@ require_once BACKUPFLOW_DIR . 'includes/class-backupflow-storage-local.php';
 require_once BACKUPFLOW_DIR . 'includes/class-backupflow-storage-ftp.php';
 require_once BACKUPFLOW_DIR . 'includes/class-backupflow-storage-google-drive.php';
 require_once BACKUPFLOW_DIR . 'includes/class-backupflow-migrator.php';
+require_once BACKUPFLOW_DIR . 'includes/class-backupflow-preflight.php';
 require_once BACKUPFLOW_DIR . 'includes/class-backupflow-backup-manager.php';
 require_once BACKUPFLOW_DIR . 'includes/class-backupflow-restore-manager.php';
 require_once BACKUPFLOW_DIR . 'includes/class-backupflow-admin.php';

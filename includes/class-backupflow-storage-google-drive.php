@@ -84,12 +84,27 @@ class BackupFlow_Storage_Google_Drive {
 	}
 
 	public function upload( $file_path, $remote_name = '' ) {
+		$result = $this->upload_resumable( $file_path, $remote_name, array(), 300 );
+		while ( empty( $result['done'] ) ) {
+			$result = $this->upload_resumable( $file_path, $remote_name, $result['state'], 300 );
+		}
+
+		return $result['remote'];
+	}
+
+	public function upload_resumable( $file_path, $remote_name = '', $state = array(), $time_budget = 8 ) {
 		if ( ! $this->configured() ) {
 			throw new RuntimeException( esc_html__( 'Google Drive is not configured.', 'backupflow' ) );
 		}
 
+		if ( ! file_exists( $file_path ) || ! is_readable( $file_path ) ) {
+			throw new RuntimeException( esc_html__( 'The backup archive is missing before Google Drive upload.', 'backupflow' ) );
+		}
+
+		$state       = is_array( $state ) ? $state : array();
 		$access_token = $this->access_token();
 		$remote_name  = $remote_name ? basename( $remote_name ) : basename( $file_path );
+		$file_size    = filesize( $file_path );
 		$metadata     = array(
 			'name' => $remote_name,
 		);
@@ -98,22 +113,56 @@ class BackupFlow_Storage_Google_Drive {
 			$metadata['parents'] = array( $this->settings['folder_id'] );
 		}
 
-		$boundary = 'backupflow_' . wp_generate_password( 12, false, false );
-		$body     = "--{$boundary}\r\n";
-		$body    .= "Content-Type: application/json; charset=UTF-8\r\n\r\n";
-		$body    .= wp_json_encode( $metadata ) . "\r\n";
-		$body    .= "--{$boundary}\r\n";
-		$body    .= "Content-Type: application/zip\r\n\r\n";
-		$body    .= file_get_contents( $file_path ) . "\r\n"; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-		$body    .= "--{$boundary}--";
+		if ( empty( $state['session_uri'] ) ) {
+			$response = wp_remote_post(
+				'https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable',
+				array(
+					'timeout' => 30,
+					'headers' => array(
+						'Authorization'           => 'Bearer ' . $access_token,
+						'Content-Type'            => 'application/json; charset=UTF-8',
+						'X-Upload-Content-Type'   => 'application/zip',
+						'X-Upload-Content-Length' => (string) $file_size,
+					),
+					'body'    => wp_json_encode( $metadata ),
+				)
+			);
 
-		$response = wp_remote_post(
-			'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
+			if ( is_wp_error( $response ) ) {
+				throw new RuntimeException( esc_html( $response->get_error_message() ) );
+			}
+
+			$session_uri = wp_remote_retrieve_header( $response, 'location' );
+			if ( ! $session_uri ) {
+				throw new RuntimeException( esc_html__( 'Google Drive did not start a resumable upload session.', 'backupflow' ) );
+			}
+
+			$state['session_uri'] = $session_uri;
+			$state['offset']      = 0;
+		}
+
+		$chunk_size = 8 * 1024 * 1024;
+		$offset     = isset( $state['offset'] ) ? (int) $state['offset'] : 0;
+		$length     = min( $chunk_size, max( 0, $file_size - $offset ) );
+		$handle     = fopen( $file_path, 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+		if ( ! $handle ) {
+			throw new RuntimeException( esc_html__( 'Could not read the backup archive for Google Drive upload.', 'backupflow' ) );
+		}
+
+		fseek( $handle, $offset );
+		$body = $length > 0 ? fread( $handle, $length ) : ''; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fread
+		fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+
+		$end = $offset + strlen( $body ) - 1;
+		$response = wp_remote_request(
+			$state['session_uri'],
 			array(
-				'timeout' => 300,
+				'method'  => 'PUT',
+				'timeout' => max( 30, (int) $time_budget + 20 ),
 				'headers' => array(
-					'Authorization' => 'Bearer ' . $access_token,
-					'Content-Type'  => 'multipart/related; boundary=' . $boundary,
+					'Content-Length' => (string) strlen( $body ),
+					'Content-Range'  => 'bytes ' . $offset . '-' . $end . '/' . $file_size,
+					'Content-Type'   => 'application/zip',
 				),
 				'body'    => $body,
 			)
@@ -124,15 +173,41 @@ class BackupFlow_Storage_Google_Drive {
 		}
 
 		$code = wp_remote_retrieve_response_code( $response );
+		if ( 308 === (int) $code ) {
+			$range = wp_remote_retrieve_header( $response, 'range' );
+			if ( $range && preg_match( '/bytes=0-(\d+)/', $range, $matches ) ) {
+				$state['offset'] = (int) $matches[1] + 1;
+			} else {
+				$state['offset'] = $offset + strlen( $body );
+			}
+
+			return array(
+				'done'     => false,
+				'progress' => $file_size > 0 ? (int) floor( ( $state['offset'] / $file_size ) * 100 ) : 0,
+				'state'    => $state,
+			);
+		}
+
 		$data = json_decode( wp_remote_retrieve_body( $response ), true );
 		if ( $code < 200 || $code > 299 || empty( $data['id'] ) ) {
 			throw new RuntimeException( esc_html__( 'Google Drive upload failed.', 'backupflow' ) );
 		}
 
 		return array(
-			'storage' => 'google_drive',
-			'id'      => sanitize_text_field( $data['id'] ),
-			'name'    => $remote_name,
+			'done'     => true,
+			'progress' => 100,
+			'state'    => array_merge(
+				$state,
+				array(
+					'offset' => $file_size,
+					'file_id'=> sanitize_text_field( $data['id'] ),
+				)
+			),
+			'remote'   => array(
+				'storage' => 'google_drive',
+				'id'      => sanitize_text_field( $data['id'] ),
+				'name'    => $remote_name,
+			),
 		);
 	}
 
@@ -182,13 +257,28 @@ class BackupFlow_Storage_Google_Drive {
 	}
 
 	public function download_to( $file_id, $local_path ) {
+		$result = $this->download_resumable( $file_id, $local_path, array(), 300 );
+		while ( empty( $result['done'] ) ) {
+			$result = $this->download_resumable( $file_id, $local_path, $result['state'], 300 );
+		}
+
+		return $local_path;
+	}
+
+	public function download_resumable( $file_id, $local_path, $state = array(), $time_budget = 8 ) {
 		$access_token = $this->access_token();
-		$response     = wp_remote_get(
+		$state        = is_array( $state ) ? $state : array();
+		$chunk_size   = 8 * 1024 * 1024;
+		$offset       = isset( $state['offset'] ) ? (int) $state['offset'] : ( file_exists( $local_path ) ? filesize( $local_path ) : 0 );
+		$end          = $offset + $chunk_size - 1;
+
+		$response = wp_remote_get(
 			'https://www.googleapis.com/drive/v3/files/' . rawurlencode( $file_id ) . '?alt=media',
 			array(
-				'timeout' => 300,
+				'timeout' => max( 30, (int) $time_budget + 20 ),
 				'headers' => array(
 					'Authorization' => 'Bearer ' . $access_token,
+					'Range'         => 'bytes=' . $offset . '-' . $end,
 				),
 			)
 		);
@@ -197,13 +287,37 @@ class BackupFlow_Storage_Google_Drive {
 			throw new RuntimeException( esc_html( $response->get_error_message() ) );
 		}
 
+		$code = (int) wp_remote_retrieve_response_code( $response );
+		if ( ! in_array( $code, array( 200, 206 ), true ) ) {
+			throw new RuntimeException( esc_html__( 'Google Drive download failed.', 'backupflow' ) );
+		}
+
 		$body = wp_remote_retrieve_body( $response );
-		if ( '' === $body ) {
+		if ( '' === $body && 0 === $offset ) {
 			throw new RuntimeException( esc_html__( 'Google Drive returned an empty backup file.', 'backupflow' ) );
 		}
 
-		file_put_contents( $local_path, $body ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
-		return $local_path;
+		wp_mkdir_p( dirname( $local_path ) );
+		$write_flags = ( 200 === $code || 0 === $offset ) ? 0 : FILE_APPEND;
+		file_put_contents( $local_path, $body, $write_flags ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+
+		$downloaded = filesize( $local_path );
+		$total      = 0;
+		$range      = wp_remote_retrieve_header( $response, 'content-range' );
+		if ( $range && preg_match( '#/(\d+)$#', $range, $matches ) ) {
+			$total = (int) $matches[1];
+		} elseif ( 200 === $code ) {
+			$total = $downloaded;
+		}
+
+		return array(
+			'done'     => $total > 0 && $downloaded >= $total,
+			'progress' => $total > 0 ? (int) floor( ( $downloaded / $total ) * 100 ) : 0,
+			'state'    => array(
+				'offset' => $downloaded,
+				'total'  => $total,
+			),
+		);
 	}
 
 	private function access_token() {

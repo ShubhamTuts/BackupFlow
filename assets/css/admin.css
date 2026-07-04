@@ -223,6 +223,22 @@
 	table-layout: fixed;
 }
 
+.backupflow-col-type {
+	width: 110px;
+}
+
+.backupflow-col-location {
+	width: 130px;
+}
+
+.backupflow-col-size {
+	width: 120px;
+}
+
+.backupflow-col-actions {
+	width: 150px;
+}
+
 .backupflow-table-tools,
 .backupflow-pagination {
 	display: flex;
@@ -309,6 +325,16 @@
 .backupflow-table td small {
 	color: var(--bf-muted);
 	margin-top: 4px;
+}
+
+.backupflow-table th:last-child,
+.backupflow-table td:last-child {
+	text-align: right;
+}
+
+.backupflow-table-actions {
+	justify-content: flex-end;
+	flex-wrap: nowrap;
 }
 
 .backupflow-icon-action {

@@ -15,13 +15,15 @@ class BackupFlow_Admin {
 	private $jobs;
 	private $storage;
 	private $migrator;
+	private $preflight;
 
-	public function __construct( BackupFlow_Backup_Manager $backup_manager, BackupFlow_Restore_Manager $restore_manager, BackupFlow_Job_Store $jobs, BackupFlow_Storage $storage, BackupFlow_Migrator $migrator ) {
+	public function __construct( BackupFlow_Backup_Manager $backup_manager, BackupFlow_Restore_Manager $restore_manager, BackupFlow_Job_Store $jobs, BackupFlow_Storage $storage, BackupFlow_Migrator $migrator, BackupFlow_Preflight $preflight ) {
 		$this->backup_manager  = $backup_manager;
 		$this->restore_manager = $restore_manager;
 		$this->jobs            = $jobs;
 		$this->storage         = $storage;
 		$this->migrator        = $migrator;
+		$this->preflight       = $preflight;
 
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
@@ -30,15 +32,19 @@ class BackupFlow_Admin {
 		add_filter( 'plugin_action_links_' . BACKUPFLOW_BASENAME, array( $this, 'plugin_action_links' ) );
 
 		add_action( 'wp_ajax_backupflow_start_backup', array( $this, 'ajax_start_backup' ) );
+		add_action( 'wp_ajax_backupflow_preflight', array( $this, 'ajax_preflight' ) );
 		add_action( 'wp_ajax_backupflow_process_job', array( $this, 'ajax_process_job' ) );
 		add_action( 'wp_ajax_backupflow_get_job', array( $this, 'ajax_get_job' ) );
+		add_action( 'wp_ajax_backupflow_resume_job', array( $this, 'ajax_resume_job' ) );
 		add_action( 'wp_ajax_backupflow_start_restore', array( $this, 'ajax_start_restore' ) );
-		add_action( 'wp_ajax_backupflow_import_backup', array( $this, 'ajax_import_backup' ) );
+		add_action( 'wp_ajax_backupflow_start_import', array( $this, 'ajax_start_import' ) );
+		add_action( 'wp_ajax_backupflow_upload_chunk', array( $this, 'ajax_upload_chunk' ) );
+		add_action( 'wp_ajax_backupflow_complete_import', array( $this, 'ajax_complete_import' ) );
+		add_action( 'wp_ajax_backupflow_cancel_import', array( $this, 'ajax_cancel_import' ) );
 		add_action( 'wp_ajax_backupflow_cancel_job', array( $this, 'ajax_cancel_job' ) );
 		add_action( 'wp_ajax_backupflow_delete_backup', array( $this, 'ajax_delete_backup' ) );
 
 		add_action( 'admin_post_backupflow_download_backup', array( $this, 'download_backup' ) );
-		add_action( 'admin_post_backupflow_import_backup', array( $this, 'import_backup' ) );
 		add_action( 'admin_post_backupflow_save_settings', array( $this, 'save_settings' ) );
 	}
 
@@ -91,6 +97,13 @@ class BackupFlow_Admin {
 					'chooseBackup'   => __( 'Choose a backup ZIP first.', 'backupflow' ),
 					'uploading'      => __( 'Uploading backup', 'backupflow' ),
 					'uploadComplete' => __( 'Backup uploaded. Starting restore...', 'backupflow' ),
+					'uploadFailed'   => __( 'Backup upload failed. Choose a valid BackupFlow ZIP and try again.', 'backupflow' ),
+					'processFailed'  => __( 'BackupFlow could not finish this process. Please try again.', 'backupflow' ),
+					'backupFailed'   => __( 'BackupFlow could not start the backup. Please try again.', 'backupflow' ),
+					'restoreFailed'  => __( 'BackupFlow could not start the restore. Please try again.', 'backupflow' ),
+					'preflightFailed'=> __( 'BackupFlow needs attention before this job can run.', 'backupflow' ),
+					'preflightReady' => __( 'BackupFlow is ready.', 'backupflow' ),
+					'importPreparing'=> __( 'Preparing secure upload', 'backupflow' ),
 					'restoreConfirm' => __( 'This restore can replace site files or database data. Continue?', 'backupflow' ),
 					'deleteConfirm'  => __( 'Delete this backup permanently?', 'backupflow' ),
 				),
@@ -149,12 +162,34 @@ class BackupFlow_Admin {
 		return $links;
 	}
 
+	public function ajax_preflight() {
+		backupflow_verify_ajax();
+
+		$context = backupflow_post_key( 'context', 'backup' );
+		$result  = $this->preflight->check(
+			$context,
+			array(
+				'destination' => backupflow_post_key( 'destination', 'local' ),
+				'expected_size' => backupflow_post_int( 'file_size', 0 ),
+				'backup_type' => backupflow_post_key( 'backup_type', 'full' ),
+			)
+		);
+
+		backupflow_json_success( array( 'preflight' => $result ) );
+	}
+
 	public function ajax_start_backup() {
 		backupflow_verify_ajax();
+		$destination = backupflow_post_key( 'destination', 'local' );
+		$preflight   = $this->preflight->check( 'backup', array( 'destination' => $destination ) );
+		if ( empty( $preflight['ready'] ) ) {
+			backupflow_json_error( $preflight['message'], array( 'preflight' => $preflight ), 409 );
+		}
+
 		$job = $this->backup_manager->start(
 			array(
 				'backup_type' => backupflow_post_key( 'backup_type', 'full' ),
-				'destination' => backupflow_post_key( 'destination', 'local' ),
+				'destination' => $destination,
 			)
 		);
 
@@ -185,10 +220,31 @@ class BackupFlow_Admin {
 		backupflow_json_success( array( 'job' => $job ) );
 	}
 
+	public function ajax_resume_job() {
+		backupflow_verify_ajax();
+		$job_id = backupflow_post_key( 'job_id' );
+		$job    = $this->jobs->get( $job_id );
+		if ( ! $job ) {
+			backupflow_json_error( __( 'Job not found.', 'backupflow' ), array(), 404 );
+		}
+
+		if ( in_array( $job['status'], array( 'complete', 'failed', 'cancelled' ), true ) ) {
+			backupflow_json_success( array( 'job' => $this->prepare_job_response( $job ) ) );
+		}
+
+		$job = 'restore' === $job['type'] ? $this->restore_manager->process( $job_id ) : $this->backup_manager->process( $job_id );
+		backupflow_json_success( array( 'job' => $this->prepare_job_response( $job ) ) );
+	}
+
 	public function ajax_start_restore() {
 		backupflow_verify_ajax();
 		$backup_id     = backupflow_post_key( 'backup_id' );
 		$restore_mode  = backupflow_post_key( 'restore_mode', 'full' );
+		$record        = backupflow_get_backup_record( $backup_id );
+		$preflight     = $this->preflight->check( 'restore', array( 'expected_size' => $record && ! empty( $record['size'] ) ? (int) $record['size'] : 0 ) );
+		if ( empty( $preflight['ready'] ) ) {
+			backupflow_json_error( $preflight['message'], array( 'preflight' => $preflight ), 409 );
+		}
 
 		try {
 			$job = $this->restore_manager->start( $backup_id, $restore_mode );
@@ -198,35 +254,133 @@ class BackupFlow_Admin {
 		}
 	}
 
-	public function ajax_import_backup() {
+	public function ajax_start_import() {
 		backupflow_verify_ajax();
 
-		try {
-			if ( ! function_exists( 'wp_handle_upload' ) ) {
-				require_once ABSPATH . 'wp-admin/includes/file.php';
-			}
+		$name = backupflow_post_text( 'file_name', 'backupflow-import.zip' );
+		$size = backupflow_post_int( 'file_size', 0 );
+		$preflight = $this->preflight->check( 'import', array( 'expected_size' => $size ) );
+		if ( empty( $preflight['ready'] ) ) {
+			backupflow_json_error( $preflight['message'], array( 'preflight' => $preflight ), 409 );
+		}
+		if ( ! preg_match( '/\.zip$/i', $name ) ) {
+			backupflow_json_error( __( 'Choose a BackupFlow ZIP file.', 'backupflow' ) );
+		}
 
-			$file   = backupflow_uploaded_file( 'backupflow_import' );
-			$upload = wp_handle_upload(
-				$file,
+		backupflow_ensure_storage_dirs();
+		$import_id = backupflow_generate_id( 'import' );
+		$target    = trailingslashit( backupflow_imports_dir() ) . $import_id . '-' . sanitize_file_name( $name );
+		$state     = array(
+			'import_id'   => $import_id,
+			'name'        => sanitize_file_name( $name ),
+			'size'        => max( 0, (int) $size ),
+			'received'    => 0,
+			'chunk_index' => 0,
+			'target'      => $target,
+			'created_at'  => current_time( 'mysql' ),
+		);
+
+		backupflow_write_json_file( backupflow_import_state_path( $import_id ), $state );
+		backupflow_json_success(
+			array(
+				'import_id'  => $import_id,
+				'chunk_size' => 4 * 1024 * 1024,
+				'received'   => 0,
+			)
+		);
+	}
+
+	public function ajax_upload_chunk() {
+		backupflow_verify_ajax();
+
+		$import_id = backupflow_post_key( 'import_id' );
+		$index     = backupflow_post_int( 'chunk_index', 0 );
+		$state     = backupflow_read_json_file( backupflow_import_state_path( $import_id ), array() );
+		if ( ! $state || empty( $state['target'] ) || ! backupflow_path_is_inside( $state['target'], backupflow_imports_dir() ) ) {
+			backupflow_json_error( __( 'Upload session not found. Choose the backup file again.', 'backupflow' ), array(), 404 );
+		}
+
+		if ( $index !== (int) $state['chunk_index'] ) {
+			backupflow_json_error(
+				__( 'Backup upload is out of sequence. Resume the upload and try again.', 'backupflow' ),
 				array(
-					'test_form' => false,
-					'mimes'     => array(
-						'zip' => 'application/zip',
-					),
-				)
+					'received'    => (int) $state['received'],
+					'chunk_index' => (int) $state['chunk_index'],
+				),
+				409
 			);
+		}
 
-			if ( empty( $upload['file'] ) || ! empty( $upload['error'] ) ) {
-				throw new RuntimeException( esc_html( isset( $upload['error'] ) ? $upload['error'] : __( 'Upload failed.', 'backupflow' ) ) );
+		$file = backupflow_uploaded_file( 'chunk' );
+		if ( UPLOAD_ERR_OK !== (int) $file['error'] || empty( $file['tmp_name'] ) || ! is_uploaded_file( $file['tmp_name'] ) ) {
+			backupflow_json_error( __( 'Could not read this upload chunk. Please retry.', 'backupflow' ) );
+		}
+
+		$in = fopen( $file['tmp_name'], 'rb' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+		$out = fopen( $state['target'], 'ab' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+		if ( ! $in || ! $out ) {
+			if ( $in ) {
+				fclose( $in ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 			}
+			if ( $out ) {
+				fclose( $out ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+			}
+			backupflow_json_error( __( 'BackupFlow could not write the uploaded backup chunk.', 'backupflow' ) );
+		}
 
-			$record = $this->migrator->import_local_backup( $upload['file'], $file['name'] );
-			wp_delete_file( $upload['file'] );
+		$written = stream_copy_to_stream( $in, $out );
+		fclose( $in ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+		fclose( $out ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+		wp_delete_file( $file['tmp_name'] );
+
+		$state['received'] = (int) $state['received'] + (int) $written;
+		$state['chunk_index'] = (int) $state['chunk_index'] + 1;
+		backupflow_write_json_file( backupflow_import_state_path( $import_id ), $state );
+
+		backupflow_json_success(
+			array(
+				'import_id'    => $import_id,
+				'received'     => (int) $state['received'],
+				'chunk_index'  => (int) $state['chunk_index'],
+				'progress'     => ! empty( $state['size'] ) ? min( 100, (int) floor( ( $state['received'] / $state['size'] ) * 100 ) ) : 0,
+			)
+		);
+	}
+
+	public function ajax_complete_import() {
+		backupflow_verify_ajax();
+
+		$import_id = backupflow_post_key( 'import_id' );
+		$state     = backupflow_read_json_file( backupflow_import_state_path( $import_id ), array() );
+		if ( ! $state || empty( $state['target'] ) || ! backupflow_path_is_inside( $state['target'], backupflow_imports_dir() ) ) {
+			backupflow_json_error( __( 'Upload session not found. Choose the backup file again.', 'backupflow' ), array(), 404 );
+		}
+
+		if ( ! file_exists( $state['target'] ) || ( ! empty( $state['size'] ) && filesize( $state['target'] ) < (int) $state['size'] ) ) {
+			backupflow_json_error( __( 'Backup upload is incomplete. Please retry the upload.', 'backupflow' ) );
+		}
+
+		try {
+			$record = $this->migrator->import_local_backup( $state['target'], $state['name'] );
+			wp_delete_file( $state['target'] );
+			wp_delete_file( backupflow_import_state_path( $import_id ) );
 			backupflow_json_success( array( 'backup' => $record ) );
 		} catch ( Throwable $e ) {
 			backupflow_json_error( $e->getMessage() );
 		}
+	}
+
+	public function ajax_cancel_import() {
+		backupflow_verify_ajax();
+
+		$import_id = backupflow_post_key( 'import_id' );
+		$state     = backupflow_read_json_file( backupflow_import_state_path( $import_id ), array() );
+		if ( $state && ! empty( $state['target'] ) && backupflow_path_is_inside( $state['target'], backupflow_imports_dir() ) && file_exists( $state['target'] ) ) {
+			wp_delete_file( $state['target'] );
+		}
+		wp_delete_file( backupflow_import_state_path( $import_id ) );
+
+		backupflow_json_success( array( 'import_id' => $import_id ) );
 	}
 
 	public function ajax_cancel_job() {
@@ -265,49 +419,43 @@ class BackupFlow_Admin {
 			wp_die( esc_html__( 'Backup file not found.', 'backupflow' ) );
 		}
 
+		$size  = filesize( $record['path'] );
+		$start = 0;
+		$end   = $size - 1;
+		$code  = 200;
+		if ( ! empty( $_SERVER['HTTP_RANGE'] ) && preg_match( '/bytes=(\d*)-(\d*)/', sanitize_text_field( wp_unslash( $_SERVER['HTTP_RANGE'] ) ), $matches ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$code  = 206;
+			$start = '' !== $matches[1] ? (int) $matches[1] : 0;
+			$end   = '' !== $matches[2] ? (int) $matches[2] : $end;
+			$start = max( 0, min( $start, $size - 1 ) );
+			$end   = max( $start, min( $end, $size - 1 ) );
+		}
+
 		nocache_headers();
+		status_header( $code );
 		header( 'Content-Type: application/zip' );
+		header( 'Accept-Ranges: bytes' );
 		header( 'Content-Disposition: attachment; filename="' . basename( $record['path'] ) . '"' );
-		header( 'Content-Length: ' . filesize( $record['path'] ) );
-		readfile( $record['path'] ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
-		exit;
-	}
-
-	public function import_backup() {
-		if ( ! backupflow_user_can_manage() ) {
-			wp_die( esc_html__( 'Permission denied.', 'backupflow' ) );
+		if ( 206 === $code ) {
+			header( 'Content-Range: bytes ' . $start . '-' . $end . '/' . $size );
 		}
+		header( 'Content-Length: ' . ( $end - $start + 1 ) );
 
-		check_admin_referer( 'backupflow_import_backup' );
-
-		try {
-			if ( ! function_exists( 'wp_handle_upload' ) ) {
-				require_once ABSPATH . 'wp-admin/includes/file.php';
+		$handle = fopen( $record['path'], 'rb' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+		if ( $handle ) {
+			fseek( $handle, $start );
+			$remaining = $end - $start + 1;
+			while ( $remaining > 0 && ! feof( $handle ) ) {
+				$chunk = fread( $handle, min( 1024 * 1024, $remaining ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fread
+				if ( false === $chunk ) {
+					break;
+				}
+				echo $chunk; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Binary download stream.
+				$remaining -= strlen( $chunk );
+				flush();
 			}
-
-			$file   = backupflow_uploaded_file( 'backupflow_import' );
-			$upload = wp_handle_upload(
-				$file,
-				array(
-					'test_form' => false,
-					'mimes'     => array(
-						'zip' => 'application/zip',
-					),
-				)
-			);
-
-			if ( empty( $upload['file'] ) || ! empty( $upload['error'] ) ) {
-				throw new RuntimeException( esc_html( isset( $upload['error'] ) ? $upload['error'] : __( 'Upload failed.', 'backupflow' ) ) );
-			}
-
-			$this->migrator->import_local_backup( $upload['file'], $file['name'] );
-			wp_delete_file( $upload['file'] );
-			$notice = 'imported';
-		} catch ( Throwable $e ) {
-			$notice = 'import_failed';
+			fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 		}
-
-		wp_safe_redirect( add_query_arg( array( 'page' => 'backupflow-restore', 'backupflow_notice' => $notice ), admin_url( 'admin.php' ) ) );
 		exit;
 	}
 
@@ -697,6 +845,13 @@ class BackupFlow_Admin {
 		}
 		?>
 		<table class="backupflow-table">
+			<colgroup>
+				<col class="backupflow-col-backup" />
+				<col class="backupflow-col-type" />
+				<col class="backupflow-col-location" />
+				<col class="backupflow-col-size" />
+				<col class="backupflow-col-actions" />
+			</colgroup>
 			<thead>
 				<tr>
 					<th><?php esc_html_e( 'Backup', 'backupflow' ); ?></th>

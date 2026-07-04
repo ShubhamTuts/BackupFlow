@@ -58,6 +58,14 @@ function backupflow_logs_dir() {
 	return trailingslashit( backupflow_storage_root() ) . 'logs';
 }
 
+function backupflow_jobs_dir() {
+	return trailingslashit( backupflow_storage_root() ) . 'jobs';
+}
+
+function backupflow_imports_dir() {
+	return trailingslashit( backupflow_tmp_dir() ) . 'imports';
+}
+
 function backupflow_secure_dir( $dir ) {
 	if ( ! wp_mkdir_p( $dir ) ) {
 		return false;
@@ -81,6 +89,8 @@ function backupflow_ensure_storage_dirs() {
 	backupflow_secure_dir( backupflow_backups_dir() );
 	backupflow_secure_dir( backupflow_tmp_dir() );
 	backupflow_secure_dir( backupflow_logs_dir() );
+	backupflow_secure_dir( backupflow_jobs_dir() );
+	backupflow_secure_dir( backupflow_imports_dir() );
 }
 
 function backupflow_clean_path( $path ) {
@@ -100,6 +110,28 @@ function backupflow_format_bytes( $bytes ) {
 	$units = array( 'B', 'KB', 'MB', 'GB', 'TB' );
 	$power = $bytes > 0 ? min( floor( log( $bytes, 1024 ) ), count( $units ) - 1 ) : 0;
 	return round( $bytes / pow( 1024, $power ), 2 ) . ' ' . $units[ $power ];
+}
+
+function backupflow_size_to_bytes( $value ) {
+	$value = trim( (string) $value );
+	if ( '' === $value ) {
+		return 0;
+	}
+
+	$unit = strtolower( substr( $value, -1 ) );
+	$num  = (float) $value;
+	switch ( $unit ) {
+		case 'g':
+			$num *= 1024;
+			// no break.
+		case 'm':
+			$num *= 1024;
+			// no break.
+		case 'k':
+			$num *= 1024;
+	}
+
+	return (int) $num;
 }
 
 function backupflow_backup_catalog() {
@@ -251,10 +283,29 @@ function backupflow_uploaded_file( $key ) {
 	return array(
 		'name'     => isset( $file['name'] ) ? sanitize_file_name( $file['name'] ) : '',
 		'type'     => isset( $file['type'] ) ? sanitize_mime_type( $file['type'] ) : '',
-		'tmp_name' => isset( $file['tmp_name'] ) ? sanitize_text_field( $file['tmp_name'] ) : '',
+		'tmp_name' => isset( $file['tmp_name'] ) ? (string) $file['tmp_name'] : '',
 		'error'    => isset( $file['error'] ) ? (int) $file['error'] : UPLOAD_ERR_NO_FILE,
 		'size'     => isset( $file['size'] ) ? (int) $file['size'] : 0,
 	);
+}
+
+function backupflow_import_state_path( $import_id ) {
+	return trailingslashit( backupflow_imports_dir() ) . sanitize_key( $import_id ) . '.json';
+}
+
+function backupflow_read_json_file( $path, $default = array() ) {
+	if ( ! file_exists( $path ) || ! is_readable( $path ) ) {
+		return $default;
+	}
+
+	$json = file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+	$data = json_decode( (string) $json, true );
+	return is_array( $data ) ? $data : $default;
+}
+
+function backupflow_write_json_file( $path, $data ) {
+	wp_mkdir_p( dirname( $path ) );
+	return false !== file_put_contents( $path, wp_json_encode( $data, JSON_PRETTY_PRINT ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 }
 
 function backupflow_encrypt_secret( $value ) {
