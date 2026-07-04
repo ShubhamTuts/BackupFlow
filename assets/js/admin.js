@@ -42,7 +42,7 @@
 			return 'database';
 		}
 
-		window.alert('Select files, database, or both before creating a backup.');
+		window.alert(BackupFlowAdmin.strings.selectBackupParts || 'Select files, database, or both before creating a backup.');
 		return '';
 	}
 
@@ -129,7 +129,10 @@
 	function updateUploadSpeed(done, total) {
 		var elapsed = uploadStartedAt ? Math.max(0.25, (Date.now() - uploadStartedAt) / 1000) : 0.25;
 		var speed = done / elapsed;
-		var message = 'Uploaded ' + formatBytes(done) + ' of ' + formatBytes(total) + ' at ' + formatBytes(speed) + '/s.';
+		var message = (BackupFlowAdmin.strings.uploadSpeed || 'Uploaded %1$s of %2$s at %3$s/s.')
+			.replace('%1$s', formatBytes(done))
+			.replace('%2$s', formatBytes(total))
+			.replace('%3$s', formatBytes(speed));
 
 		if (!uploadSpeedEntry || !uploadSpeedEntry.length) {
 			uploadSpeedEntry = appendLog(message, 'info');
@@ -306,7 +309,7 @@
 
 			if (request.status < 200 || request.status >= 300 || !response || !response.success) {
 				if (retryCount < 3) {
-					appendLog('Upload paused. Retrying this chunk...', 'warning');
+					appendLog(BackupFlowAdmin.strings.uploadRetrying || 'Upload paused. Retrying this chunk...', 'warning');
 					window.setTimeout(function () {
 						uploadChunk(importId, file, chunkSize, index, offset, restoreMode, retryCount + 1);
 					}, 900);
@@ -318,7 +321,7 @@
 
 			nextOffset = response.data && response.data.received ? parseInt(response.data.received, 10) : end;
 			if (index === 0 || nextOffset >= file.size || (index + 1) % 10 === 0) {
-				appendLog('Uploaded chunk ' + (index + 1) + '.', 'success');
+				appendLog((BackupFlowAdmin.strings.uploadedChunk || 'Uploaded chunk %d.').replace('%d', index + 1), 'success');
 			}
 			if (nextOffset < file.size) {
 				uploadChunk(importId, file, chunkSize, index + 1, nextOffset, restoreMode, 0);
@@ -334,7 +337,7 @@
 					return;
 				}
 				currentImportId = null;
-				appendLog('Backup added to Restore Points.', 'success');
+				appendLog(BackupFlowAdmin.strings.backupAddedRestorePoints || 'Backup added to Restore Points.', 'success');
 				if (restoreMode === 'upload') {
 					finishModal(true, BackupFlowAdmin.strings.uploadStored || 'Backup uploaded and added to Restore Points.', {
 						type: 'backup',
@@ -366,7 +369,7 @@
 
 		openModal(BackupFlowAdmin.strings.importPreparing || 'Preparing secure upload');
 		setUploadProgress(0, BackupFlowAdmin.strings.importPreparing || 'Preparing secure upload');
-		appendLog('Checking server readiness for upload.', 'info');
+		appendLog(BackupFlowAdmin.strings.checkingUploadReadiness || 'Checking server readiness for upload.', 'info');
 
 		runPreflight('import', 'local', file.size || 0).done(function (preflightResponse) {
 			if (!preflightResponse || !preflightResponse.success || !preflightResponse.data.preflight || !preflightResponse.data.preflight.ready) {
@@ -385,7 +388,7 @@
 				currentImportId = response.data.import_id;
 				uploadStartedAt = Date.now();
 				appendLog(BackupFlowAdmin.strings.uploadSessionReady || 'Upload session ready.', 'success');
-				appendLog('Uploading in chunks up to ' + formatBytes(response.data.chunk_size || (16 * 1024 * 1024)) + '.', 'info');
+				appendLog((BackupFlowAdmin.strings.uploadingChunkSize || 'Uploading in chunks up to %s.').replace('%s', formatBytes(response.data.chunk_size || (16 * 1024 * 1024))), 'info');
 				uploadChunk(response.data.import_id, file, response.data.chunk_size || (16 * 1024 * 1024), 0, response.data.received || 0, restoreMode, 0);
 			}).fail(function (xhr) {
 				var message = BackupFlowAdmin.strings.uploadFailed || 'Backup upload failed. Choose a valid BackupFlow ZIP and try again.';
@@ -414,10 +417,10 @@
 			};
 			var $tools = $('<div/>', { 'class': 'backupflow-table-tools' }).append(
 				$('<label/>').append(
-					$('<span/>').text('Search backups'),
+					$('<span/>').text(BackupFlowAdmin.strings.searchBackups || 'Search backups'),
 					$('<input/>', {
 						type: 'search',
-						placeholder: 'Search backups'
+						placeholder: BackupFlowAdmin.strings.searchBackups || 'Search backups'
 					})
 				),
 				$('<strong/>', { 'class': 'backupflow-table-count' })
@@ -453,8 +456,10 @@
 
 				$rows.hide();
 				$matched.slice(start, end).show();
-				$tools.find('.backupflow-table-count').text(total + ' item' + (total === 1 ? '' : 's'));
-				$pager.find('span').text('Page ' + state.page + ' of ' + pages);
+				$tools.find('.backupflow-table-count').text(
+					(total === 1 ? (BackupFlowAdmin.strings.tableItem || '%d item') : (BackupFlowAdmin.strings.tableItems || '%d items')).replace('%d', total)
+				);
+				$pager.find('span').text((BackupFlowAdmin.strings.tablePage || 'Page %1$d of %2$d').replace('%1$d', state.page).replace('%2$d', pages));
 				$pager.find('[data-page-prev]').prop('disabled', state.page <= 1);
 				$pager.find('[data-page-next]').prop('disabled', state.page >= pages);
 				$pager.toggle(total > pageSize);
@@ -498,7 +503,7 @@
 				return;
 			}
 
-			$('.backupflow-modal').find('#backupflow-modal-title').text('Backup in progress');
+			$('.backupflow-modal').find('#backupflow-modal-title').text(BackupFlowAdmin.strings.backupInProgress || 'Backup in progress');
 			post('backupflow_start_backup', {
 				backup_type: type,
 				destination: destination || 'local'
@@ -533,9 +538,9 @@
 
 	function startRestore(backupId, restoreMode, keepModal) {
 		if (!keepModal) {
-			openModal('Checking restore readiness');
+			openModal(BackupFlowAdmin.strings.checkingRestoreReadiness || 'Checking restore readiness');
 		} else {
-			$('.backupflow-modal').find('#backupflow-modal-title').text('Restore in progress');
+			$('.backupflow-modal').find('#backupflow-modal-title').text(BackupFlowAdmin.strings.restoreInProgress || 'Restore in progress');
 		}
 		runPreflight('restore', 'local').done(function (preflightResponse) {
 			if (!preflightResponse || !preflightResponse.success || !preflightResponse.data.preflight || !preflightResponse.data.preflight.ready) {
@@ -543,7 +548,7 @@
 				return;
 			}
 
-			$('.backupflow-modal').find('#backupflow-modal-title').text('Restore in progress');
+			$('.backupflow-modal').find('#backupflow-modal-title').text(BackupFlowAdmin.strings.restoreInProgress || 'Restore in progress');
 			post('backupflow_start_restore', {
 				backup_id: backupId,
 				restore_mode: restoreMode || 'full'

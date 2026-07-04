@@ -19,6 +19,21 @@ BackupFlow is a WordPress backup plugin built for site owners, agencies, freelan
 
 It creates portable BackupFlow ZIP archives, stores backups locally or on connected storage, and provides live backup and restore progress inside the WordPress admin.
 
+## Languages
+
+BackupFlow ships with a translation template and compiled language packs so the admin experience is ready for multilingual WordPress sites.
+
+| Flag | Language | WordPress locale | Files |
+| --- | --- | --- | --- |
+| 🇺🇸 | English (US) | `en_US` | `.po` + `.mo` |
+| 🇬🇧 | English (UK) | `en_GB` | `.po` + `.mo` |
+| 🇫🇷 | French | `fr_FR` | `.po` + `.mo` |
+| 🇩🇪 | German | `de_DE` | `.po` + `.mo` |
+| 🇧🇷 | Portuguese (Brazil) | `pt_BR` | `.po` + `.mo` |
+| 🇪🇸 | Spanish | `es_ES` | `.po` + `.mo` |
+
+The source template is available at `languages/backupflow.pot` for new translations.
+
 ## Why BackupFlow?
 
 Most WordPress backup plugins are either too heavy, too technical, or hide the important restore steps until something breaks. BackupFlow focuses on the workflows people actually need:
@@ -50,6 +65,7 @@ Most WordPress backup plugins are either too heavy, too technical, or hide the i
 | Live backup and restore logs | Yes |
 | Cancel confirmation flow | Yes |
 | Paginated backup tables | Yes |
+| Translation-ready admin UI | Yes |
 | Multisite migration | Not included in this release |
 
 ## Backup Workflows
@@ -242,4 +258,3 @@ Multisite migration is not included in this release. BackupFlow detects multisit
 BackupFlow is licensed under the GPLv2 or later.
 
 See `readme.txt` and the plugin header in `backupflow.php` for WordPress.org metadata.
-
