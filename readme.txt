@@ -363,6 +363,27 @@ BackupFlow can help with:
 * Backup before theme change
 * Backup before WooCommerce update
 
+
+= Google Drive privacy and terms disclosure =
+
+Google Drive storage is optional and is only used when you configure and connect it in BackupFlow storage settings.
+
+When Google Drive storage is enabled, BackupFlow connects to Google services to authenticate the connection and upload backup ZIP files to your Google Drive account. This may send backup archive data, backup file names, file metadata, OAuth authorization data, access tokens, refresh tokens, and the configured Google Drive folder ID to Google APIs.
+
+BackupFlow uses these Google endpoints:
+
+* Google OAuth authorization and token endpoints for account connection.
+* Google Drive API upload endpoints for backup file uploads.
+* Google Drive API file endpoints for listing or downloading connected backup files when those features are used.
+
+Google handles that data under Google's own terms and privacy policies:
+
+* Google Privacy Policy: https://policies.google.com/privacy
+* Google Terms of Service: https://policies.google.com/terms
+* Google Drive API Terms: https://developers.google.com/terms
+
+If you do not connect Google Drive, BackupFlow does not send backup files to Google Drive.
+
 == Installation ==
 
 = Install from WordPress dashboard =

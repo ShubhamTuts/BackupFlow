@@ -404,6 +404,10 @@ class BackupFlow_Admin {
 			backupflow_json_error( __( 'Job not found.', 'backupflow' ), array(), 404 );
 		}
 
+		if ( isset( $job['type'] ) && 'restore' === $job['type'] && class_exists( 'BackupFlow_Restore_Manager' ) ) {
+			delete_transient( BackupFlow_Restore_Manager::ACTIVE_LOCK );
+		}
+
 		backupflow_json_success( array( 'job' => $job ) );
 	}
 
@@ -626,13 +630,10 @@ class BackupFlow_Admin {
 
 	public function view_wizard() {
 		?>
-		<section class="backupflow-wizard-intro">
-			<img src="<?php echo esc_url( BACKUPFLOW_URL . 'assets/img/BackupFlow.png' ); ?>" alt="" />
-			<div>
-				<h2><?php esc_html_e( 'Ready to set up your first backup?', 'backupflow' ); ?></h2>
-				<p><?php esc_html_e( 'You are a few steps away from creating a portable backup of this site.', 'backupflow' ); ?></p>
-			</div>
-		</section>
+		<nav class="backupflow-tabs" aria-label="<?php esc_attr_e( 'BackupFlow setup', 'backupflow' ); ?>">
+			<a class="is-active" href="<?php echo esc_url( admin_url( 'admin.php?page=backupflow-wizard' ) ); ?>"><?php esc_html_e( 'Create Backup', 'backupflow' ); ?></a>
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=backupflow-restore' ) ); ?>"><?php esc_html_e( 'Import Backup', 'backupflow' ); ?></a>
+		</nav>
 		<?php $this->backup_builder( true ); ?>
 		<?php
 	}
@@ -653,29 +654,70 @@ class BackupFlow_Admin {
 	}
 
 	public function view_restore() {
+		$settings    = backupflow_get_settings();
+		$storage_url = admin_url( 'admin.php?page=backupflow-storage' );
+		$ftp_ready   = function_exists( 'ftp_connect' ) && ! empty( $settings['ftp']['host'] ) && ! empty( $settings['ftp']['username'] ) && ! empty( $settings['ftp']['password'] );
+		$drive_ready = ! empty( $settings['google_drive']['client_id'] ) && ! empty( $settings['google_drive']['client_secret'] ) && ! empty( $settings['google_drive']['refresh_token'] );
 		?>
 		<section class="backupflow-import-band backupflow-import-workflow">
-			<div>
-				<p class="backupflow-eyebrow"><?php esc_html_e( 'Restore from file', 'backupflow' ); ?></p>
-				<h3><?php esc_html_e( 'Upload a BackupFlow ZIP', 'backupflow' ); ?></h3>
-				<p><?php esc_html_e( 'Choose a backup file, then select whether to restore the database, files, or the full site.', 'backupflow' ); ?></p>
+			<div class="backupflow-source-tabs" role="tablist" aria-label="<?php esc_attr_e( 'Choose restore source', 'backupflow' ); ?>">
+				<button class="is-active" data-import-source-tab="local" type="button" role="tab" aria-selected="true"><?php esc_html_e( 'Local', 'backupflow' ); ?></button>
+				<button data-import-source-tab="cloud" type="button" role="tab" aria-selected="false"><?php esc_html_e( 'Cloud', 'backupflow' ); ?></button>
 			</div>
-			<div class="backupflow-upload-box" data-import-uploader>
-				<input id="backupflow-import-file" data-import-file type="file" accept=".zip" />
-				<label for="backupflow-import-file">
-					<span class="dashicons dashicons-upload" aria-hidden="true"></span>
-					<strong><?php esc_html_e( 'Drop your backup ZIP here or choose a file', 'backupflow' ); ?></strong>
-					<small><?php esc_html_e( 'BackupFlow will upload the file and show restore progress before making changes.', 'backupflow' ); ?></small>
-				</label>
-				<div class="backupflow-selected-file" data-selected-file hidden></div>
-				<div class="backupflow-restore-choice" data-restore-choice hidden>
-					<h4><?php esc_html_e( 'What do you want to do with this backup?', 'backupflow' ); ?></h4>
-					<div>
-						<button type="button" data-import-restore-mode="upload"><img src="<?php echo esc_url( BACKUPFLOW_URL . 'assets/img/BackupFlow.png' ); ?>" alt="" /><span><?php esc_html_e( 'Upload only', 'backupflow' ); ?></span></button>
-						<button type="button" data-import-restore-mode="database"><img src="<?php echo esc_url( BACKUPFLOW_URL . 'assets/img/database.png' ); ?>" alt="" /><span><?php esc_html_e( 'Database only', 'backupflow' ); ?></span></button>
-						<button type="button" data-import-restore-mode="files"><img src="<?php echo esc_url( BACKUPFLOW_URL . 'assets/img/local-server.png' ); ?>" alt="" /><span><?php esc_html_e( 'Files only', 'backupflow' ); ?></span></button>
-						<button type="button" data-import-restore-mode="full"><img src="<?php echo esc_url( BACKUPFLOW_URL . 'assets/img/BackupFlow.png' ); ?>" alt="" /><span><?php esc_html_e( 'Full restore', 'backupflow' ); ?></span></button>
+
+			<div class="backupflow-import-source is-active" data-import-source-panel="local">
+				<div class="backupflow-import-head">
+					<p class="backupflow-eyebrow"><?php esc_html_e( 'Restore from file', 'backupflow' ); ?></p>
+					<h3><?php esc_html_e( 'Upload a BackupFlow ZIP', 'backupflow' ); ?></h3>
+					<p><?php esc_html_e( 'Choose a backup file, then restore the database, files, or the full site. You can also upload the ZIP now and restore it later.', 'backupflow' ); ?></p>
+				</div>
+
+				<div class="backupflow-upload-box" data-import-uploader>
+					<input id="backupflow-import-file" data-import-file type="file" accept=".zip" />
+					<label for="backupflow-import-file">
+						<span class="dashicons dashicons-upload" aria-hidden="true"></span>
+						<strong><?php esc_html_e( 'Drop your backup ZIP here or choose a file', 'backupflow' ); ?></strong>
+						<small><?php esc_html_e( 'BackupFlow uploads the file first and shows live progress before any restore starts.', 'backupflow' ); ?></small>
+					</label>
+					<div class="backupflow-selected-file" data-selected-file hidden></div>
+					<div class="backupflow-restore-choice" data-restore-choice hidden>
+						<h4><?php esc_html_e( 'What do you want to restore from this backup?', 'backupflow' ); ?></h4>
+						<div class="backupflow-restore-options">
+							<button type="button" data-import-restore-mode="database"><img src="<?php echo esc_url( BACKUPFLOW_URL . 'assets/img/database.png' ); ?>" alt="" /><span><?php esc_html_e( 'Database only', 'backupflow' ); ?></span></button>
+							<button type="button" data-import-restore-mode="files"><img src="<?php echo esc_url( BACKUPFLOW_URL . 'assets/img/local-server.png' ); ?>" alt="" /><span><?php esc_html_e( 'Files only', 'backupflow' ); ?></span></button>
+							<button type="button" data-import-restore-mode="full"><img src="<?php echo esc_url( BACKUPFLOW_URL . 'assets/img/BackupFlow.png' ); ?>" alt="" /><span><?php esc_html_e( 'Full restore', 'backupflow' ); ?></span></button>
+						</div>
+						<div class="backupflow-upload-only-row">
+							<button class="backupflow-button backupflow-button-secondary" type="button" data-import-restore-mode="upload"><?php esc_html_e( 'Upload only', 'backupflow' ); ?></button>
+							<small><?php esc_html_e( 'Add this ZIP to Restore Points without restoring it now.', 'backupflow' ); ?></small>
+						</div>
 					</div>
+				</div>
+			</div>
+
+			<div class="backupflow-import-source" data-import-source-panel="cloud" hidden>
+				<div class="backupflow-import-head">
+					<p class="backupflow-eyebrow"><?php esc_html_e( 'Restore from cloud', 'backupflow' ); ?></p>
+					<h3><?php esc_html_e( 'Connect a storage account', 'backupflow' ); ?></h3>
+					<p><?php esc_html_e( 'Connected storage can be used for cloud backup workflows. Configure a storage account first, then return here to restore from uploaded backups.', 'backupflow' ); ?></p>
+				</div>
+				<div class="backupflow-cloud-grid">
+					<a class="backupflow-cloud-card<?php echo $ftp_ready ? ' is-connected' : ''; ?>" href="<?php echo esc_url( $storage_url ); ?>">
+						<img src="<?php echo esc_url( BACKUPFLOW_URL . 'assets/img/ftp.png' ); ?>" alt="" />
+						<span>
+							<strong><?php esc_html_e( 'FTP', 'backupflow' ); ?></strong>
+							<small><?php echo esc_html( $ftp_ready ? __( 'Connected and ready to manage.', 'backupflow' ) : __( 'Click to connect FTP storage.', 'backupflow' ) ); ?></small>
+						</span>
+						<em><?php echo esc_html( $ftp_ready ? __( 'Connected', 'backupflow' ) : __( 'Connect', 'backupflow' ) ); ?></em>
+					</a>
+					<a class="backupflow-cloud-card<?php echo $drive_ready ? ' is-connected' : ''; ?>" href="<?php echo esc_url( $storage_url ); ?>">
+						<img src="<?php echo esc_url( BACKUPFLOW_URL . 'assets/img/google-drive.png' ); ?>" alt="" />
+						<span>
+							<strong><?php esc_html_e( 'Google Drive', 'backupflow' ); ?></strong>
+							<small><?php echo esc_html( $drive_ready ? __( 'Connected and ready to manage.', 'backupflow' ) : __( 'Click to connect Google Drive.', 'backupflow' ) ); ?></small>
+						</span>
+						<em><?php echo esc_html( $drive_ready ? __( 'Connected', 'backupflow' ) : __( 'Connect', 'backupflow' ) ); ?></em>
+					</a>
 				</div>
 			</div>
 		</section>
@@ -887,7 +929,7 @@ class BackupFlow_Admin {
 							<small><?php echo esc_html( isset( $record['created_at'] ) ? $record['created_at'] : '' ); ?><?php echo ! empty( $record['source_url'] ) ? ' | ' . esc_html( $record['source_url'] ) : ''; ?></small>
 						</td>
 						<td><?php echo esc_html( ucfirst( isset( $record['type'] ) ? $record['type'] : 'full' ) ); ?></td>
-						<td><?php echo esc_html( isset( $record['destination'] ) ? $record['destination'] : 'local' ); ?></td>
+						<td><?php echo esc_html( $this->backup_location_label( $record ) ); ?></td>
 						<td><?php echo esc_html( isset( $record['size_human'] ) ? $record['size_human'] : backupflow_format_bytes( isset( $record['size'] ) ? $record['size'] : 0 ) ); ?></td>
 						<td class="backupflow-table-actions">
 							<button class="backupflow-icon-action backupflow-restore-backup" data-backup-id="<?php echo esc_attr( $record['id'] ); ?>" title="<?php esc_attr_e( 'Restore', 'backupflow' ); ?>" type="button"><span class="dashicons dashicons-update-alt" aria-hidden="true"></span><span class="screen-reader-text"><?php esc_html_e( 'Restore', 'backupflow' ); ?></span></button>
@@ -901,6 +943,18 @@ class BackupFlow_Admin {
 			</tbody>
 		</table>
 		<?php
+	}
+
+	private function backup_location_label( $record ) {
+		$destination = isset( $record['destination'] ) ? sanitize_key( $record['destination'] ) : 'local';
+		$labels      = array(
+			'local'        => __( 'Local', 'backupflow' ),
+			'imported'     => __( 'Uploaded file', 'backupflow' ),
+			'ftp'          => __( 'Cloud - FTP', 'backupflow' ),
+			'google_drive' => __( 'Cloud - Google Drive', 'backupflow' ),
+		);
+
+		return isset( $labels[ $destination ] ) ? $labels[ $destination ] : ucwords( str_replace( array( '-', '_' ), ' ', $destination ) );
 	}
 
 	private function metric( $label, $value, $meta ) {

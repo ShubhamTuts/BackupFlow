@@ -607,6 +607,16 @@
 		startRestore($(this).data('backup-id'), 'full');
 	});
 
+	$(document).on('click', '[data-import-source-tab]', function () {
+		var source = $(this).data('import-source-tab');
+		var $workflow = $(this).closest('.backupflow-import-workflow');
+
+		$workflow.find('[data-import-source-tab]').removeClass('is-active').attr('aria-selected', 'false');
+		$(this).addClass('is-active').attr('aria-selected', 'true');
+		$workflow.find('[data-import-source-panel]').removeClass('is-active').prop('hidden', true);
+		$workflow.find('[data-import-source-panel="' + source + '"]').addClass('is-active').prop('hidden', false);
+	});
+
 	$(document).on('change', '[data-import-file]', function () {
 		var file = this.files && this.files.length ? this.files[0] : null;
 		var $uploader = $(this).closest('[data-import-uploader]');

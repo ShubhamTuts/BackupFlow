@@ -10,6 +10,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class BackupFlow_Restore_Manager {
+	const ACTIVE_LOCK = 'backupflow_restore_active_job';
+
 	private $jobs;
 	private $database;
 	private $files;
@@ -21,6 +23,8 @@ class BackupFlow_Restore_Manager {
 	}
 
 	public function start( $backup_id, $restore_mode = 'full' ) {
+		$this->clear_abandoned_restore_jobs();
+
 		foreach ( $this->jobs->all() as $existing ) {
 			if ( isset( $existing['type'], $existing['status'] ) && 'restore' === $existing['type'] && ! in_array( $existing['status'], array( 'complete', 'failed', 'cancelled' ), true ) ) {
 				throw new RuntimeException( esc_html__( 'Another restore is already running. Finish or cancel it before starting a new restore.', 'backupflow' ) );
@@ -80,6 +84,8 @@ class BackupFlow_Restore_Manager {
 			return $job;
 		}
 
+		set_transient( self::ACTIVE_LOCK, $job['id'], 90 );
+
 		try {
 			switch ( $job['step'] ) {
 				case 'queued':
@@ -101,6 +107,30 @@ class BackupFlow_Restore_Manager {
 			}
 		} catch ( Throwable $e ) {
 			return $this->jobs->fail( $job['id'], $e->getMessage() );
+		}
+	}
+
+	private function clear_abandoned_restore_jobs() {
+		$active_job_id = sanitize_key( (string) get_transient( self::ACTIVE_LOCK ) );
+
+		foreach ( $this->jobs->all() as $existing ) {
+			if ( empty( $existing['id'] ) || empty( $existing['type'] ) || 'restore' !== $existing['type'] ) {
+				continue;
+			}
+
+			if ( in_array( isset( $existing['status'] ) ? $existing['status'] : '', array( 'complete', 'failed', 'cancelled' ), true ) ) {
+				continue;
+			}
+
+			if ( $active_job_id && $active_job_id === $existing['id'] ) {
+				continue;
+			}
+
+			if ( ! empty( $existing['payload']['tmp_dir'] ) ) {
+				$this->cleanup_tmp( $existing['payload']['tmp_dir'] );
+			}
+
+			$this->jobs->cancel( $existing['id'] );
 		}
 	}
 
