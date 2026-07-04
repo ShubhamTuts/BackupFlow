@@ -69,6 +69,7 @@
 		$modal.find('[data-backup-download]').prop('hidden', true).attr('href', '#');
 		$modal.find('[data-dashboard-link]').prop('hidden', true).attr('href', BackupFlowAdmin.dashboardUrl || '#');
 		$modal.find('[data-job-close]').prop('disabled', false).text(BackupFlowAdmin.strings.cancel || 'Cancel');
+		$('body').addClass('backupflow-modal-open');
 		$modal.prop('hidden', false);
 	}
 
@@ -174,7 +175,7 @@
 
 			window.setTimeout(function () {
 				processJob(jobId);
-			}, 500);
+			}, 150);
 		}).fail(function (xhr) {
 			if (jobCancelled) {
 				return;
@@ -202,6 +203,7 @@
 
 	function closeModal(reload) {
 		$('.backupflow-modal').prop('hidden', true).find('[data-cancel-confirm]').prop('hidden', true);
+		$('body').removeClass('backupflow-modal-open');
 		currentJobId = null;
 		if (reload) {
 			window.location.reload();
@@ -383,7 +385,8 @@
 				currentImportId = response.data.import_id;
 				uploadStartedAt = Date.now();
 				appendLog(BackupFlowAdmin.strings.uploadSessionReady || 'Upload session ready.', 'success');
-				uploadChunk(response.data.import_id, file, response.data.chunk_size || (4 * 1024 * 1024), 0, response.data.received || 0, restoreMode, 0);
+				appendLog('Uploading in chunks up to ' + formatBytes(response.data.chunk_size || (16 * 1024 * 1024)) + '.', 'info');
+				uploadChunk(response.data.import_id, file, response.data.chunk_size || (16 * 1024 * 1024), 0, response.data.received || 0, restoreMode, 0);
 			}).fail(function (xhr) {
 				var message = BackupFlowAdmin.strings.uploadFailed || 'Backup upload failed. Choose a valid BackupFlow ZIP and try again.';
 				if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {

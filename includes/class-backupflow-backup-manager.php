@@ -125,8 +125,8 @@ class BackupFlow_Backup_Manager {
 
 		$payload['db_export_state'] = $this->database->export_chunk(
 			$payload['db_export_state'],
-			250,
-			8,
+			500,
+			10,
 			function ( $index, $total, $table ) use ( $job ) {
 				if ( 0 === $index % 5 || $index === $total || 1 === $index ) {
 					$this->jobs->log(
@@ -182,7 +182,7 @@ class BackupFlow_Backup_Manager {
 
 		$payload['file_scan_state'] = $this->files->scan_files_chunk(
 			$payload['file_scan_state'],
-			8,
+			10,
 			function ( $count, $excluded ) use ( $job ) {
 				$this->jobs->log(
 					$job['id'],
@@ -227,7 +227,7 @@ class BackupFlow_Backup_Manager {
 		$payload = $job['payload'];
 		$total   = max( 1, (int) $payload['file_total'] );
 		$index   = (int) $payload['file_index'];
-		$chunk   = 300;
+		$chunk   = 500;
 
 		$result = $this->files->add_files_to_zip_chunk( $payload['zip_path'], $payload['file_list'], ABSPATH, $index, $chunk );
 

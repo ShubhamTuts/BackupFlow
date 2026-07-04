@@ -293,7 +293,7 @@ class BackupFlow_Admin {
 		backupflow_json_success(
 			array(
 				'import_id'  => $import_id,
-				'chunk_size' => 4 * 1024 * 1024,
+				'chunk_size' => backupflow_upload_chunk_size( $size ),
 				'received'   => 0,
 			)
 		);
@@ -525,7 +525,7 @@ class BackupFlow_Admin {
 	}
 
 	public function render_wizard() {
-		$this->render_shell( __( 'Welcome Wizard', 'backupflow' ), array( $this, 'view_wizard' ), 'wizard' );
+		$this->render_shell( __( 'Create Your First Backup', 'backupflow' ), array( $this, 'view_wizard' ), 'wizard' );
 	}
 
 	public function render_backups() {
@@ -1080,7 +1080,7 @@ class BackupFlow_Admin {
 		);
 
 		if ( isset( $messages[ $notice ] ) ) {
-			echo '<div class="notice notice-info is-dismissible"><p>' . esc_html( $messages[ $notice ] ) . '</p></div>';
+			echo '<div class="notice notice-info is-dismissible backupflow-notice"><p>' . esc_html( $messages[ $notice ] ) . '</p></div>';
 		}
 	}
 

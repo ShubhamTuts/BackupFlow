@@ -185,8 +185,8 @@ class BackupFlow_Restore_Manager {
 
 		$payload['safety_export_state'] = $this->database->export_chunk(
 			$payload['safety_export_state'],
-			250,
-			8,
+			500,
+			10,
 			function ( $index, $total, $table ) use ( $job ) {
 				if ( 0 === $index % 5 || $index === $total || 1 === $index ) {
 					$this->jobs->log(
@@ -281,7 +281,7 @@ class BackupFlow_Restore_Manager {
 			$payload['zip_path'],
 			ABSPATH,
 			(int) $payload['zip_index'],
-			180,
+			300,
 			! empty( $settings['skip_wp_config_restore'] )
 		);
 
@@ -393,8 +393,8 @@ class BackupFlow_Restore_Manager {
 
 		$payload['database_import_state'] = $this->database->import_file_chunk(
 			$payload['database_import_state'],
-			75,
-			8,
+			150,
+			10,
 			function ( $count ) use ( $job ) {
 				if ( 0 === $count % 100 ) {
 					$this->jobs->log(
@@ -450,8 +450,8 @@ class BackupFlow_Restore_Manager {
 			$payload['rewrite_state'] = $this->database->search_replace_url_chunk(
 				$payload['rewrite_state'],
 				$payload['rewrite_pairs'],
-				200,
-				8,
+				300,
+				10,
 				function ( $table, $changed ) use ( $job ) {
 					$this->jobs->log(
 						$job['id'],

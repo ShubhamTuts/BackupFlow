@@ -134,6 +134,31 @@ function backupflow_size_to_bytes( $value ) {
 	return (int) $num;
 }
 
+function backupflow_upload_chunk_size( $file_size = 0 ) {
+	$file_size = max( 0, (int) $file_size );
+	$min       = 512 * 1024;
+	$target    = 16 * 1024 * 1024;
+	$max       = 32 * 1024 * 1024;
+	$limits    = array();
+
+	foreach ( array( 'upload_max_filesize', 'post_max_size' ) as $setting ) {
+		$bytes = backupflow_size_to_bytes( ini_get( $setting ) );
+		if ( $bytes > 0 ) {
+			$limits[] = $bytes;
+		}
+	}
+
+	if ( $file_size > 2 * 1024 * 1024 * 1024 ) {
+		$target = 24 * 1024 * 1024;
+	}
+
+	if ( $limits ) {
+		$target = min( $target, (int) floor( min( $limits ) * 0.75 ) );
+	}
+
+	return max( $min, min( $max, $target ) );
+}
+
 function backupflow_backup_catalog() {
 	$catalog = get_option( 'backupflow_backups', array() );
 	return is_array( $catalog ) ? $catalog : array();

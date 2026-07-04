@@ -228,6 +228,8 @@ class BackupFlow_Preflight {
 		$excludes = preg_split( '/\r\n|\r|\n/', (string) $settings['exclude_paths'] );
 		$root     = trailingslashit( wp_normalize_path( ABSPATH ) );
 		$total    = 0;
+		$count    = 0;
+		$started  = microtime( true );
 
 		try {
 			$iterator = new RecursiveIteratorIterator(
@@ -244,6 +246,11 @@ class BackupFlow_Preflight {
 					continue;
 				}
 				$total += (int) $file->getSize();
+				$count++;
+
+				if ( $count >= 5000 || microtime( true ) - $started >= 1.5 ) {
+					break;
+				}
 			}
 		} catch ( Throwable $e ) {
 			return 0;
