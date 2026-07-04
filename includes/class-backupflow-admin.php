@@ -97,6 +97,8 @@ class BackupFlow_Admin {
 					'chooseBackup'   => __( 'Choose a backup ZIP first.', 'backupflow' ),
 					'uploading'      => __( 'Uploading backup', 'backupflow' ),
 					'uploadComplete' => __( 'Backup uploaded. Starting restore...', 'backupflow' ),
+					'uploadStored'   => __( 'Backup uploaded and added to Restore Points.', 'backupflow' ),
+					'uploadSessionReady' => __( 'Upload session ready.', 'backupflow' ),
 					'uploadFailed'   => __( 'Backup upload failed. Choose a valid BackupFlow ZIP and try again.', 'backupflow' ),
 					'processFailed'  => __( 'BackupFlow could not finish this process. Please try again.', 'backupflow' ),
 					'backupFailed'   => __( 'BackupFlow could not start the backup. Please try again.', 'backupflow' ),
@@ -181,14 +183,21 @@ class BackupFlow_Admin {
 	public function ajax_start_backup() {
 		backupflow_verify_ajax();
 		$destination = backupflow_post_key( 'destination', 'local' );
-		$preflight   = $this->preflight->check( 'backup', array( 'destination' => $destination ) );
+		$backup_type = backupflow_post_key( 'backup_type', 'full' );
+		$preflight   = $this->preflight->check(
+			'backup',
+			array(
+				'destination' => $destination,
+				'backup_type' => $backup_type,
+			)
+		);
 		if ( empty( $preflight['ready'] ) ) {
 			backupflow_json_error( $preflight['message'], array( 'preflight' => $preflight ), 409 );
 		}
 
 		$job = $this->backup_manager->start(
 			array(
-				'backup_type' => backupflow_post_key( 'backup_type', 'full' ),
+				'backup_type' => $backup_type,
 				'destination' => $destination,
 			)
 		);
@@ -362,6 +371,9 @@ class BackupFlow_Admin {
 
 		try {
 			$record = $this->migrator->import_local_backup( $state['target'], $state['name'] );
+			if ( ! empty( $record['id'] ) ) {
+				$record['download_url'] = $this->download_url( $record['id'] );
+			}
 			wp_delete_file( $state['target'] );
 			wp_delete_file( backupflow_import_state_path( $import_id ) );
 			backupflow_json_success( array( 'backup' => $record ) );
@@ -657,8 +669,9 @@ class BackupFlow_Admin {
 				</label>
 				<div class="backupflow-selected-file" data-selected-file hidden></div>
 				<div class="backupflow-restore-choice" data-restore-choice hidden>
-					<h4><?php esc_html_e( 'What do you want to restore today?', 'backupflow' ); ?></h4>
+					<h4><?php esc_html_e( 'What do you want to do with this backup?', 'backupflow' ); ?></h4>
 					<div>
+						<button type="button" data-import-restore-mode="upload"><img src="<?php echo esc_url( BACKUPFLOW_URL . 'assets/img/BackupFlow.png' ); ?>" alt="" /><span><?php esc_html_e( 'Upload only', 'backupflow' ); ?></span></button>
 						<button type="button" data-import-restore-mode="database"><img src="<?php echo esc_url( BACKUPFLOW_URL . 'assets/img/database.png' ); ?>" alt="" /><span><?php esc_html_e( 'Database only', 'backupflow' ); ?></span></button>
 						<button type="button" data-import-restore-mode="files"><img src="<?php echo esc_url( BACKUPFLOW_URL . 'assets/img/local-server.png' ); ?>" alt="" /><span><?php esc_html_e( 'Files only', 'backupflow' ); ?></span></button>
 						<button type="button" data-import-restore-mode="full"><img src="<?php echo esc_url( BACKUPFLOW_URL . 'assets/img/BackupFlow.png' ); ?>" alt="" /><span><?php esc_html_e( 'Full restore', 'backupflow' ); ?></span></button>
@@ -777,6 +790,11 @@ class BackupFlow_Admin {
 	}
 
 	private function backup_builder( $wizard = false ) {
+		$settings          = backupflow_get_settings();
+		$ftp_ready         = ! empty( $settings['ftp']['host'] ) && ! empty( $settings['ftp']['username'] ) && ! empty( $settings['ftp']['password'] );
+		$google_ready      = ! empty( $settings['google_drive']['client_id'] ) && ! empty( $settings['google_drive']['client_secret'] ) && ! empty( $settings['google_drive']['refresh_token'] );
+		$ftp_message       = __( 'Configure FTP settings before using this storage.', 'backupflow' );
+		$google_message    = __( 'Connect Google Drive before using this storage.', 'backupflow' );
 		?>
 		<div class="backupflow-builder<?php echo $wizard ? ' is-wizard' : ''; ?>" data-current-step="1">
 			<aside class="backupflow-stepper" aria-label="<?php esc_attr_e( 'Backup setup steps', 'backupflow' ); ?>">
@@ -818,8 +836,8 @@ class BackupFlow_Admin {
 					<h3><?php esc_html_e( 'Where to store your backup?', 'backupflow' ); ?></h3>
 					<div class="backupflow-destination-grid">
 						<button class="backupflow-destination is-selected" data-destination="local" type="button"><img src="<?php echo esc_url( BACKUPFLOW_URL . 'assets/img/local-server.png' ); ?>" alt="" /><span><?php esc_html_e( 'Website Server', 'backupflow' ); ?></span></button>
-						<button class="backupflow-destination" data-destination="ftp" type="button"><img src="<?php echo esc_url( BACKUPFLOW_URL . 'assets/img/ftp.png' ); ?>" alt="" /><span><?php esc_html_e( 'FTP', 'backupflow' ); ?></span></button>
-						<button class="backupflow-destination" data-destination="google_drive" type="button"><img src="<?php echo esc_url( BACKUPFLOW_URL . 'assets/img/google-drive.png' ); ?>" alt="" /><span><?php esc_html_e( 'Google Drive', 'backupflow' ); ?></span></button>
+						<button class="backupflow-destination<?php echo $ftp_ready ? '' : ' is-disabled'; ?>" data-destination="ftp" data-disabled-message="<?php echo esc_attr( $ftp_message ); ?>" <?php disabled( ! $ftp_ready ); ?> type="button"><img src="<?php echo esc_url( BACKUPFLOW_URL . 'assets/img/ftp.png' ); ?>" alt="" /><span><?php esc_html_e( 'FTP', 'backupflow' ); ?><small><?php echo esc_html( $ftp_ready ? __( 'Ready', 'backupflow' ) : __( 'Configure first', 'backupflow' ) ); ?></small></span></button>
+						<button class="backupflow-destination<?php echo $google_ready ? '' : ' is-disabled'; ?>" data-destination="google_drive" data-disabled-message="<?php echo esc_attr( $google_message ); ?>" <?php disabled( ! $google_ready ); ?> type="button"><img src="<?php echo esc_url( BACKUPFLOW_URL . 'assets/img/google-drive.png' ); ?>" alt="" /><span><?php esc_html_e( 'Google Drive', 'backupflow' ); ?><small><?php echo esc_html( $google_ready ? __( 'Ready', 'backupflow' ) : __( 'Connect first', 'backupflow' ) ); ?></small></span></button>
 					</div>
 					<div class="backupflow-locked-grid">
 						<span><?php esc_html_e( 'Coming soon:', 'backupflow' ); ?></span>
@@ -874,7 +892,7 @@ class BackupFlow_Admin {
 						<td class="backupflow-table-actions">
 							<button class="backupflow-icon-action backupflow-restore-backup" data-backup-id="<?php echo esc_attr( $record['id'] ); ?>" title="<?php esc_attr_e( 'Restore', 'backupflow' ); ?>" type="button"><span class="dashicons dashicons-update-alt" aria-hidden="true"></span><span class="screen-reader-text"><?php esc_html_e( 'Restore', 'backupflow' ); ?></span></button>
 							<?php if ( ! $restore_only ) : ?>
-								<a class="backupflow-icon-action" href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'action' => 'backupflow_download_backup', 'backup_id' => $record['id'] ), admin_url( 'admin-post.php' ) ), 'backupflow_download_backup_' . $record['id'] ) ); ?>" title="<?php esc_attr_e( 'Download', 'backupflow' ); ?>"><span class="dashicons dashicons-download" aria-hidden="true"></span><span class="screen-reader-text"><?php esc_html_e( 'Download', 'backupflow' ); ?></span></a>
+								<a class="backupflow-icon-action" href="<?php echo esc_url( $this->download_url( $record['id'] ) ); ?>" title="<?php esc_attr_e( 'Download', 'backupflow' ); ?>"><span class="dashicons dashicons-download" aria-hidden="true"></span><span class="screen-reader-text"><?php esc_html_e( 'Download', 'backupflow' ); ?></span></a>
 								<button class="backupflow-icon-action backupflow-delete-backup" data-backup-id="<?php echo esc_attr( $record['id'] ); ?>" title="<?php esc_attr_e( 'Delete', 'backupflow' ); ?>" type="button"><span class="dashicons dashicons-trash" aria-hidden="true"></span><span class="screen-reader-text"><?php esc_html_e( 'Delete', 'backupflow' ); ?></span></button>
 							<?php endif; ?>
 						</td>
@@ -943,6 +961,12 @@ class BackupFlow_Admin {
 				<h3><?php esc_html_e( 'PageForge', 'backupflow' ); ?></h3>
 				<p><?php esc_html_e( 'Programmatic SEO pages and growth content for WordPress.', 'backupflow' ); ?></p>
 				<a href="https://wordpress.org/plugins/pageforge/" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View Plugin', 'backupflow' ); ?></a>
+			</section>
+			<section class="backupflow-side-card">
+				<img src="<?php echo esc_url( BACKUPFLOW_URL . 'assets/img/nimora.png' ); ?>" alt="" />
+				<h3><?php esc_html_e( 'Nimora AI', 'backupflow' ); ?></h3>
+				<p><?php esc_html_e( 'Find revenue leaks, fix important SEO issues, and create watermark-free WooCommerce UGC images, product videos, and more.', 'backupflow' ); ?></p>
+				<a href="https://wordpress.org/plugins/nimora-ai-seo-product-media-analytics/" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View Plugin', 'backupflow' ); ?></a>
 			</section>
 			<section class="backupflow-side-card">
 				<img src="<?php echo esc_url( BACKUPFLOW_URL . 'assets/img/immersa-core.png' ); ?>" alt="" />
@@ -1016,17 +1040,20 @@ class BackupFlow_Admin {
 		}
 
 		$backup_id = sanitize_key( $job['result']['backup']['id'] );
-		$job['result']['backup']['download_url'] = wp_nonce_url(
-			add_query_arg(
-				array(
-					'action'    => 'backupflow_download_backup',
-					'backup_id' => $backup_id,
-				),
-				admin_url( 'admin-post.php' )
-			),
-			'backupflow_download_backup_' . $backup_id
-		);
+		$job['result']['backup']['download_url'] = $this->download_url( $backup_id );
 
 		return $job;
+	}
+
+	private function download_url( $backup_id ) {
+		$backup_id = sanitize_key( $backup_id );
+		return add_query_arg(
+			array(
+				'action'    => 'backupflow_download_backup',
+				'backup_id' => $backup_id,
+				'_wpnonce'  => wp_create_nonce( 'backupflow_download_backup_' . $backup_id ),
+			),
+			admin_url( 'admin-post.php' )
+		);
 	}
 }

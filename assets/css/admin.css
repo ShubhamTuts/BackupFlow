@@ -599,6 +599,26 @@
 	font-weight: 900;
 }
 
+.backupflow-destination small {
+	color: var(--bf-muted);
+	display: block;
+	font-size: 11px;
+	font-weight: 800;
+	margin-top: 4px;
+}
+
+.backupflow-destination:disabled,
+.backupflow-destination.is-disabled {
+	cursor: not-allowed;
+	opacity: 0.56;
+}
+
+.backupflow-destination:disabled:hover,
+.backupflow-destination.is-disabled:hover {
+	border-color: var(--bf-line);
+	box-shadow: none;
+}
+
 .backupflow-destination img {
 	width: 38px;
 	height: 38px;
@@ -731,7 +751,7 @@
 
 .backupflow-restore-choice > div {
 	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
+	grid-template-columns: repeat(4, minmax(0, 1fr));
 	gap: 10px;
 }
 

@@ -1,6 +1,6 @@
 === BackupFlow – Easy Backup, Restore & Migration for WordPress ===
 Contributors: codefreex
-Tags: backup, restore, migration, google drive, ftp
+Tags: backup, files backup, cloud backup, wordpress backup, database backup
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 7.4

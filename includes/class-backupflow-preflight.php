@@ -32,9 +32,11 @@ class BackupFlow_Preflight {
 
 		$destination = isset( $args['destination'] ) ? sanitize_key( $args['destination'] ) : '';
 		if ( 'ftp' === $destination ) {
+			$checks[] = $this->check_storage_config( 'ftp' );
 			$checks[] = $this->check_ftp();
 		}
 		if ( 'google_drive' === $destination ) {
+			$checks[] = $this->check_storage_config( 'google_drive' );
 			$checks[] = $this->check_http();
 		}
 
@@ -152,6 +154,39 @@ class BackupFlow_Preflight {
 			'status'   => function_exists( 'ftp_connect' ) ? 'ready' : 'blocked',
 			'blocking' => true,
 			'message'  => function_exists( 'ftp_connect' ) ? __( 'The PHP FTP extension is available.', 'backupflow' ) : __( 'The PHP FTP extension is required for FTP backups.', 'backupflow' ),
+		);
+	}
+
+	private function check_storage_config( $destination ) {
+		$settings = backupflow_get_settings();
+		if ( 'ftp' === $destination ) {
+			$ok = ! empty( $settings['ftp']['host'] ) && ! empty( $settings['ftp']['username'] ) && ! empty( $settings['ftp']['password'] );
+			return array(
+				'key'      => 'ftp_config',
+				'label'    => __( 'FTP settings', 'backupflow' ),
+				'status'   => $ok ? 'ready' : 'blocked',
+				'blocking' => true,
+				'message'  => $ok ? __( 'FTP settings are ready.', 'backupflow' ) : __( 'Configure FTP host, username, and password before using FTP storage.', 'backupflow' ),
+			);
+		}
+
+		if ( 'google_drive' === $destination ) {
+			$ok = ! empty( $settings['google_drive']['client_id'] ) && ! empty( $settings['google_drive']['client_secret'] ) && ! empty( $settings['google_drive']['refresh_token'] );
+			return array(
+				'key'      => 'google_drive_config',
+				'label'    => __( 'Google Drive settings', 'backupflow' ),
+				'status'   => $ok ? 'ready' : 'blocked',
+				'blocking' => true,
+				'message'  => $ok ? __( 'Google Drive is connected.', 'backupflow' ) : __( 'Connect Google Drive before using Google Drive storage.', 'backupflow' ),
+			);
+		}
+
+		return array(
+			'key'      => 'storage_config',
+			'label'    => __( 'Storage settings', 'backupflow' ),
+			'status'   => 'ready',
+			'blocking' => false,
+			'message'  => __( 'Storage is ready.', 'backupflow' ),
 		);
 	}
 

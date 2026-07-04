@@ -7,6 +7,8 @@
 	var jobCancelled = false;
 	var activeUploadRequest = null;
 	var currentImportId = null;
+	var uploadStartedAt = 0;
+	var uploadSpeedEntry = null;
 
 	function post(action, data) {
 		return $.post(BackupFlowAdmin.ajaxUrl, $.extend({
@@ -56,6 +58,8 @@
 		jobCancelled = false;
 		activeUploadRequest = null;
 		currentImportId = null;
+		uploadStartedAt = 0;
+		uploadSpeedEntry = null;
 		$modal.find('#backupflow-modal-title').text(title || BackupFlowAdmin.strings.working);
 		$modal.find('[data-job-message]').text(BackupFlowAdmin.strings.working);
 		$modal.find('.backupflow-progress span').css('width', '0%');
@@ -87,6 +91,52 @@
 			).appendTo($log);
 		});
 		$log.scrollTop($log.prop('scrollHeight'));
+	}
+
+	function currentTime() {
+		var now = new Date();
+		return String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
+	}
+
+	function appendLog(message, level) {
+		var $log = $('.backupflow-modal').find('[data-job-log]');
+		var $row = $('<div/>', {
+			'class': 'is-' + (level || 'info')
+		}).append(
+			$('<span/>').text(currentTime()),
+			$('<strong/>').text(message || '')
+		);
+
+		$row.appendTo($log);
+		$log.scrollTop($log.prop('scrollHeight'));
+		return $row;
+	}
+
+	function formatBytes(bytes) {
+		var units = ['B', 'KB', 'MB', 'GB', 'TB'];
+		var value = Math.max(0, parseFloat(bytes || 0));
+		var index = 0;
+
+		while (value >= 1024 && index < units.length - 1) {
+			value = value / 1024;
+			index++;
+		}
+
+		return (index === 0 ? value.toFixed(0) : value.toFixed(2)) + ' ' + units[index];
+	}
+
+	function updateUploadSpeed(done, total) {
+		var elapsed = uploadStartedAt ? Math.max(0.25, (Date.now() - uploadStartedAt) / 1000) : 0.25;
+		var speed = done / elapsed;
+		var message = 'Uploaded ' + formatBytes(done) + ' of ' + formatBytes(total) + ' at ' + formatBytes(speed) + '/s.';
+
+		if (!uploadSpeedEntry || !uploadSpeedEntry.length) {
+			uploadSpeedEntry = appendLog(message, 'info');
+			return;
+		}
+
+		uploadSpeedEntry.find('span').text(currentTime());
+		uploadSpeedEntry.find('strong').text(message);
 	}
 
 	function processJob(jobId) {
@@ -232,6 +282,7 @@
 				return;
 			}
 			setUploadProgress(Math.round(((offset + event.loaded) / file.size) * 100), BackupFlowAdmin.strings.uploading || 'Uploading backup');
+			updateUploadSpeed(offset + event.loaded, file.size);
 		});
 
 		request.onreadystatechange = function () {
@@ -253,6 +304,7 @@
 
 			if (request.status < 200 || request.status >= 300 || !response || !response.success) {
 				if (retryCount < 3) {
+					appendLog('Upload paused. Retrying this chunk...', 'warning');
 					window.setTimeout(function () {
 						uploadChunk(importId, file, chunkSize, index, offset, restoreMode, retryCount + 1);
 					}, 900);
@@ -263,12 +315,15 @@
 			}
 
 			nextOffset = response.data && response.data.received ? parseInt(response.data.received, 10) : end;
+			if (index === 0 || nextOffset >= file.size || (index + 1) % 10 === 0) {
+				appendLog('Uploaded chunk ' + (index + 1) + '.', 'success');
+			}
 			if (nextOffset < file.size) {
 				uploadChunk(importId, file, chunkSize, index + 1, nextOffset, restoreMode, 0);
 				return;
 			}
 
-			setUploadProgress(100, BackupFlowAdmin.strings.uploadComplete || 'Backup uploaded. Starting restore...');
+			setUploadProgress(100, restoreMode === 'upload' ? (BackupFlowAdmin.strings.uploadStored || 'Backup uploaded and added to Restore Points.') : (BackupFlowAdmin.strings.uploadComplete || 'Backup uploaded. Starting restore...'));
 			post('backupflow_complete_import', {
 				import_id: importId
 			}).done(function (completeResponse) {
@@ -277,6 +332,16 @@
 					return;
 				}
 				currentImportId = null;
+				appendLog('Backup added to Restore Points.', 'success');
+				if (restoreMode === 'upload') {
+					finishModal(true, BackupFlowAdmin.strings.uploadStored || 'Backup uploaded and added to Restore Points.', {
+						type: 'backup',
+						result: {
+							backup: completeResponse.data.backup
+						}
+					});
+					return;
+				}
 				startRestore(completeResponse.data.backup.id, restoreMode, true);
 			}).fail(function (xhr) {
 				var message = BackupFlowAdmin.strings.uploadFailed || 'Backup upload failed. Choose a valid BackupFlow ZIP and try again.';
@@ -299,6 +364,7 @@
 
 		openModal(BackupFlowAdmin.strings.importPreparing || 'Preparing secure upload');
 		setUploadProgress(0, BackupFlowAdmin.strings.importPreparing || 'Preparing secure upload');
+		appendLog('Checking server readiness for upload.', 'info');
 
 		runPreflight('import', 'local', file.size || 0).done(function (preflightResponse) {
 			if (!preflightResponse || !preflightResponse.success || !preflightResponse.data.preflight || !preflightResponse.data.preflight.ready) {
@@ -315,6 +381,8 @@
 					return;
 				}
 				currentImportId = response.data.import_id;
+				uploadStartedAt = Date.now();
+				appendLog(BackupFlowAdmin.strings.uploadSessionReady || 'Upload session ready.', 'success');
 				uploadChunk(response.data.import_id, file, response.data.chunk_size || (4 * 1024 * 1024), 0, response.data.received || 0, restoreMode, 0);
 			}).fail(function (xhr) {
 				var message = BackupFlowAdmin.strings.uploadFailed || 'Backup upload failed. Choose a valid BackupFlow ZIP and try again.';
@@ -515,6 +583,10 @@
 	});
 
 	$(document).on('click', '.backupflow-destination', function () {
+		if ($(this).is(':disabled') || $(this).hasClass('is-disabled')) {
+			return;
+		}
+
 		$(this).closest('.backupflow-destination-grid').find('.backupflow-destination').removeClass('is-selected');
 		$(this).addClass('is-selected');
 	});

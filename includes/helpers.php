@@ -353,7 +353,8 @@ function backupflow_rel_path( $path, $root ) {
 }
 
 function backupflow_manifest_from_zip( $zip_path ) {
-	if ( ! class_exists( 'ZipArchive' ) || ! file_exists( $zip_path ) ) {
+	$zip_path = wp_normalize_path( (string) $zip_path );
+	if ( '' === $zip_path || ! class_exists( 'ZipArchive' ) || ! file_exists( $zip_path ) ) {
 		return null;
 	}
 
