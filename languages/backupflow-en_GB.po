@@ -1,9 +1,9 @@
-# BackupFlow translations for en_GB.
+﻿# BackupFlow translations for en_GB.
 # Copyright (C) 2026 Codefreex
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: BackupFlow 1.0.0\n"
+"Project-Id-Version: BackupFlow 1.0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/codefreex/backupflow/issues\n"
 "POT-Creation-Date: 2026-07-04 15:59:08+0000\n"
 "PO-Revision-Date: 2026-07-04 16:18:32+0000\n"

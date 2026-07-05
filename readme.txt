@@ -1,10 +1,10 @@
-=== BackupFlow – Easy Backup, Restore & Migration ===
+=== BackupFlow - Easy Backup, Restore & Migration ===
 Contributors: codefreex
 Tags: backup, files backup, cloud backup, wordpress backup, database backup
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 Donate link: https://www.paypal.com/ncp/payment/EA96GMSSWBPAA
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -559,6 +559,14 @@ You can read the documentation here:
 
 == Changelog ==
 
+= 1.0.1 =
+
+* Improved restore imports for plugin tables with rejected foreign key constraints.
+* Improved migration safety for database table prefix handling during restore.
+* Protected the destination site URL during database restore so imports cannot redirect the admin to the source domain mid-process.
+* Removed the manual translation loader so WordPress.org can load plugin translations automatically.
+* Refreshed translation catalogs for the latest restore messages.
+
 = 1.0.0 =
 
 * Initial release.
@@ -581,6 +589,9 @@ You can read the documentation here:
 * Added protective files for plugin backup storage directories.
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+Recommended update for restore/import reliability and WordPress.org Plugin Check compatibility.
 
 = 1.0.0 =
 Initial release of BackupFlow with WordPress backup, restore, migration, local storage, FTP upload, and Google Drive upload.

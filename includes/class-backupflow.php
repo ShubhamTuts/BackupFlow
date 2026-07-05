@@ -49,8 +49,6 @@ class BackupFlow {
 	}
 
 	private function __construct() {
-		load_plugin_textdomain( 'backupflow', false, dirname( BACKUPFLOW_BASENAME ) . '/languages' );
-
 		$this->jobs            = new BackupFlow_Job_Store();
 		$this->database        = new BackupFlow_Database();
 		$this->files           = new BackupFlow_File_System();

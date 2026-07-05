@@ -88,7 +88,7 @@ BackupFlow focuses on the core actions that site owners, agencies, freelancers, 
 | Clean WordPress admin dashboard                   | Included               |
 | Storage settings for local, FTP, and Google Drive | Included               |
 | Translation-ready admin UI                        | Included               |
-| Multisite migration                               | Not included in v1.0.0 |
+| Multisite migration                               | Not included in v1.0.x |
 
 ---
 
@@ -586,6 +586,18 @@ BackupFlow is tested up to WordPress 7.0.
 ---
 
 ## Changelog
+
+### 1.0.1
+
+Recommended maintenance release for import and review readiness.
+
+Updated:
+
+* Improved restore imports for plugin tables with rejected foreign key constraints
+* Improved migration safety for database table prefix handling during restore
+* Protected the destination site URL during database restore so imports cannot redirect the admin to the source domain mid-process
+* Removed the manual translation loader so WordPress.org can load plugin translations automatically
+* Refreshed translation catalogs for the latest restore messages
 
 ### 1.0.0
 

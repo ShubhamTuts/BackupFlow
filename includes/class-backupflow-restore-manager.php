@@ -55,7 +55,7 @@ class BackupFlow_Restore_Manager {
 			'tmp_dir'         => $tmp_dir,
 			'manifest'        => $manifest,
 			'restore_mode'    => $restore_mode,
-			'destination_url' => home_url(),
+			'destination_url' => $this->resolve_destination_url(),
 			'zip_index'       => 0,
 			'file_total'      => 0,
 			'file_restored'   => 0,
@@ -106,6 +106,9 @@ class BackupFlow_Restore_Manager {
 					return $this->jobs->fail( $job['id'], __( 'Unknown restore step.', 'backupflow' ) );
 			}
 		} catch ( Throwable $e ) {
+			if ( ! empty( $job['payload'] ) && is_array( $job['payload'] ) ) {
+				$this->protect_destination_urls( $job['payload'] );
+			}
 			return $this->jobs->fail( $job['id'], $e->getMessage() );
 		}
 	}
@@ -366,6 +369,7 @@ class BackupFlow_Restore_Manager {
 		$index   = isset( $payload['database_part_index'] ) ? (int) $payload['database_part_index'] : 0;
 
 		if ( ! isset( $files[ $index ] ) ) {
+			$this->protect_destination_urls( $payload );
 			$job['step']     = 'rewrite_urls';
 			$job['progress'] = 84;
 			$job['message']  = __( 'Database import complete', 'backupflow' );
@@ -415,6 +419,8 @@ class BackupFlow_Restore_Manager {
 				}
 			}
 		);
+
+		$this->protect_destination_urls( $payload );
 
 		$fallbacks_after = isset( $payload['database_import_state']['foreign_key_fallbacks'] ) ? (int) $payload['database_import_state']['foreign_key_fallbacks'] : 0;
 		if ( $fallbacks_after > $fallbacks_before ) {
@@ -485,13 +491,13 @@ class BackupFlow_Restore_Manager {
 			$job['progress']  = ! empty( $payload['rewrite_state']['done'] ) ? 98 : min( 97, 84 + (int) floor( 13 * ( (int) $payload['rewrite_state']['table_index'] / $total_tables ) ) );
 			$job['message']   = __( 'Rewriting site URLs', 'backupflow' );
 			$job['payload']   = $payload;
+			$this->protect_destination_urls( $payload );
 
 			if ( empty( $payload['rewrite_state']['done'] ) ) {
 				return $this->jobs->save( $job );
 			}
 		} else {
-			update_option( 'home', $destination_url );
-			update_option( 'siteurl', $destination_url );
+			$this->protect_destination_urls( $payload );
 		}
 
 		$job['step'] = 'verify_restore';
@@ -503,8 +509,7 @@ class BackupFlow_Restore_Manager {
 		$payload = $job['payload'];
 		$changed = isset( $payload['rewrite_state']['changed'] ) ? (int) $payload['rewrite_state']['changed'] : 0;
 
-		update_option( 'home', $payload['destination_url'] );
-		update_option( 'siteurl', $payload['destination_url'] );
+		$this->protect_destination_urls( $payload );
 		flush_rewrite_rules();
 		$this->cleanup_tmp( $payload['tmp_dir'] );
 
@@ -515,6 +520,34 @@ class BackupFlow_Restore_Manager {
 			),
 			__( 'Your site was restored successfully.', 'backupflow' )
 		);
+	}
+
+	private function resolve_destination_url() {
+		$current = untrailingslashit( home_url() );
+		$host    = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$host    = preg_replace( '/[^A-Za-z0-9\.\-:\[\]]/', '', (string) $host );
+
+		if ( '' === $host ) {
+			return $current;
+		}
+
+		$path = wp_parse_url( $current, PHP_URL_PATH );
+		$url  = ( is_ssl() ? 'https://' : 'http://' ) . $host . ( $path ? $path : '' );
+
+		return untrailingslashit( esc_url_raw( $url ) );
+	}
+
+	private function protect_destination_urls( $payload ) {
+		$destination_url = isset( $payload['destination_url'] ) ? untrailingslashit( esc_url_raw( $payload['destination_url'] ) ) : $this->resolve_destination_url();
+		if ( '' === $destination_url ) {
+			return;
+		}
+
+		update_option( 'home', $destination_url );
+		update_option( 'siteurl', $destination_url );
+		wp_cache_delete( 'home', 'options' );
+		wp_cache_delete( 'siteurl', 'options' );
+		wp_cache_delete( 'alloptions', 'options' );
 	}
 
 	private function database_parts( $payload ) {

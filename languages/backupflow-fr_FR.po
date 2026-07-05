@@ -1,9 +1,9 @@
-# BackupFlow translations for fr_FR.
+﻿# BackupFlow translations for fr_FR.
 # Copyright (C) 2026 Codefreex
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: BackupFlow 1.0.0\n"
+"Project-Id-Version: BackupFlow 1.0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/codefreex/backupflow/issues\n"
 "POT-Creation-Date: 2026-07-04 15:59:08+0000\n"
 "PO-Revision-Date: 2026-07-04 16:13:35+0000\n"
@@ -18,7 +18,7 @@ msgstr ""
 
 #: includes/class-backupflow-backup-manager.php:216
 msgid "%d files are ready to package."
-msgstr "Les fichiers%d sont prêts à être empaquetés."
+msgstr "Les fichiers%d sont prÃªts Ã  Ãªtre empaquetÃ©s."
 
 #: includes/class-backupflow-preflight.php:133
 msgid "%s free on this server."
@@ -30,7 +30,7 @@ msgstr "PHP 64 bits est disponible pour les archives volumineuses."
 
 #: includes/class-backupflow-preflight.php:76
 msgid "64-bit PHP is required for very large backups."
-msgstr "PHP 64 bits est requis pour les sauvegardes très volumineuses."
+msgstr "PHP 64 bits est requis pour les sauvegardes trÃ¨s volumineuses."
 
 #: includes/class-backupflow-admin.php:931
 msgid "Actions"
@@ -42,11 +42,11 @@ msgstr "Ajoutez ce ZIP aux points de restauration sans le restaurer maintenant."
 
 #: includes/class-backupflow-admin.php:68
 msgid "Add-ons"
-msgstr "Modules complémentaires"
+msgstr "Modules complÃ©mentaires"
 
 #: includes/class-backupflow-backup-manager.php:251
 msgid "All selected files are in the archive."
-msgstr "Tous les fichiers sélectionnés sont dans l'archive."
+msgstr "Tous les fichiers sÃ©lectionnÃ©s sont dans l'archive."
 
 #: includes/class-backupflow-admin.php:835 includes/class-backupflow-admin.php:898 includes/class-backupflow-admin.php:997
 msgid "Amazon S3"
@@ -54,11 +54,11 @@ msgstr "Amazon S3"
 
 #: includes/class-backupflow-restore-manager.php:30
 msgid "Another restore is already running. Finish or cancel it before starting a new restore."
-msgstr "Une autre restauration est déjà en cours. Terminez-le ou annulez-le avant de démarrer une nouvelle restauration."
+msgstr "Une autre restauration est dÃ©jÃ  en cours. Terminez-le ou annulez-le avant de dÃ©marrer une nouvelle restauration."
 
 #: includes/class-backupflow-admin.php:96 includes/class-backupflow-admin.php:1061
 msgid "Are you sure you want to cancel the process?"
-msgstr "Êtes-vous sûr de vouloir annuler le processus ?"
+msgstr "ÃŠtes-vous sÃ»r de vouloir annuler le processusÂ ?"
 
 #: includes/class-backupflow-admin.php:829
 msgid "Automatic backups"
@@ -82,15 +82,15 @@ msgstr "Sauvegarde"
 
 #: includes/class-backupflow-admin.php:114
 msgid "Backup added to Restore Points."
-msgstr "Sauvegarde ajoutée aux points de restauration."
+msgstr "Sauvegarde ajoutÃ©e aux points de restauration."
 
 #: includes/class-backupflow-backup-manager.php:278
 msgid "Backup archive finalized."
-msgstr "Archive de sauvegarde finalisée."
+msgstr "Archive de sauvegarde finalisÃ©e."
 
 #: includes/class-backupflow-backup-manager.php:285
 msgid "Backup archive is ready. Remote upload is starting."
-msgstr "L'archive de sauvegarde est prête. Le téléchargement à distance démarre."
+msgstr "L'archive de sauvegarde est prÃªte. Le tÃ©lÃ©chargement Ã  distance dÃ©marre."
 
 #: includes/class-backupflow-admin.php:806
 msgid "Backup behavior"
@@ -98,7 +98,7 @@ msgstr "Comportement de sauvegarde"
 
 #: includes/class-backupflow-backup-manager.php:363
 msgid "Backup created successfully."
-msgstr "Sauvegarde créée avec succès."
+msgstr "Sauvegarde crÃ©Ã©e avec succÃ¨s."
 
 #: includes/class-backupflow-admin.php:445 includes/class-backupflow-restore-manager.php:36
 msgid "Backup file not found."
@@ -106,11 +106,11 @@ msgstr "Fichier de sauvegarde introuvable."
 
 #: includes/class-backupflow-admin.php:1086
 msgid "Backup import failed. Check the ZIP file and try again."
-msgstr "L'importation de la sauvegarde a échoué. Vérifiez le fichier ZIP et réessayez."
+msgstr "L'importation de la sauvegarde a Ã©chouÃ©. VÃ©rifiez le fichier ZIP et rÃ©essayez."
 
 #: includes/class-backupflow-admin.php:1085
 msgid "Backup imported and added to restore points."
-msgstr "Sauvegarde importée et ajoutée aux points de restauration."
+msgstr "Sauvegarde importÃ©e et ajoutÃ©e aux points de restauration."
 
 #: includes/class-backupflow-admin.php:119
 msgid "Backup in progress"
@@ -118,7 +118,7 @@ msgstr "Sauvegarde en cours"
 
 #: includes/class-backupflow-backup-manager.php:60
 msgid "Backup job created."
-msgstr "Tâche de sauvegarde créée."
+msgstr "TÃ¢che de sauvegarde crÃ©Ã©e."
 
 #: includes/class-backupflow-backup-manager.php:68
 msgid "Backup job not found."
@@ -126,7 +126,7 @@ msgstr "Travail de sauvegarde introuvable."
 
 #: includes/class-backupflow-admin.php:656
 msgid "Backup library"
-msgstr "Bibliothèque de sauvegarde"
+msgstr "BibliothÃ¨que de sauvegarde"
 
 #: includes/class-backupflow-restore-manager.php:41
 msgid "Backup manifest is missing or invalid."
@@ -134,11 +134,11 @@ msgstr "Le manifeste de sauvegarde est manquant ou invalide."
 
 #: includes/class-backupflow-admin.php:852
 msgid "Backup setup steps"
-msgstr "Étapes de configuration de la sauvegarde"
+msgstr "Ã‰tapes de configuration de la sauvegarde"
 
 #: includes/class-backupflow-admin.php:607
 msgid "Backup status"
-msgstr "État de la sauvegarde"
+msgstr "Ã‰tat de la sauvegarde"
 
 #: includes/class-backupflow-preflight.php:96
 msgid "Backup storage"
@@ -146,27 +146,27 @@ msgstr "Stockage de sauvegarde"
 
 #: includes/class-backupflow-preflight.php:99
 msgid "Backup storage is writable."
-msgstr "Le stockage de sauvegarde est accessible en écriture."
+msgstr "Le stockage de sauvegarde est accessible en Ã©criture."
 
 #: includes/class-backupflow-admin.php:102
 msgid "Backup upload failed. Choose a valid BackupFlow ZIP and try again."
-msgstr "Le téléchargement de la sauvegarde a échoué. Choisissez un BackupFlow ZIP valide et réessayez."
+msgstr "Le tÃ©lÃ©chargement de la sauvegarde a Ã©chouÃ©. Choisissez un BackupFlow ZIP valide et rÃ©essayez."
 
 #: includes/class-backupflow-admin.php:379
 msgid "Backup upload is incomplete. Please retry the upload."
-msgstr "Le téléchargement de la sauvegarde est incomplet. Veuillez réessayer le téléchargement."
+msgstr "Le tÃ©lÃ©chargement de la sauvegarde est incomplet. Veuillez rÃ©essayer le tÃ©lÃ©chargement."
 
 #: includes/class-backupflow-admin.php:324
 msgid "Backup upload is out of sequence. Resume the upload and try again."
-msgstr "Le téléchargement de la sauvegarde est hors séquence. Reprenez le téléchargement et réessayez."
+msgstr "Le tÃ©lÃ©chargement de la sauvegarde est hors sÃ©quence. Reprenez le tÃ©lÃ©chargement et rÃ©essayez."
 
 #: includes/class-backupflow-admin.php:100
 msgid "Backup uploaded and added to Restore Points."
-msgstr "Sauvegarde téléchargée et ajoutée aux points de restauration."
+msgstr "Sauvegarde tÃ©lÃ©chargÃ©e et ajoutÃ©e aux points de restauration."
 
 #: includes/class-backupflow-admin.php:99
 msgid "Backup uploaded. Starting restore..."
-msgstr "Sauvegarde téléchargée. Démarrage de la restauration..."
+msgstr "Sauvegarde tÃ©lÃ©chargÃ©e. DÃ©marrage de la restauration..."
 
 #: includes/class-backupflow-admin.php:53 includes/class-backupflow-admin.php:54 includes/class-backupflow-admin.php:573
 msgid "BackupFlow"
@@ -186,19 +186,19 @@ msgstr "Actions BackupFlow"
 
 #: includes/class-backupflow-preflight.php:111
 msgid "BackupFlow cannot write temporary restore files."
-msgstr "BackupFlow ne peut pas écrire de fichiers de restauration temporaires."
+msgstr "BackupFlow ne peut pas Ã©crire de fichiers de restauration temporaires."
 
 #: includes/class-backupflow-preflight.php:99
 msgid "BackupFlow cannot write to its backup storage folder."
-msgstr "BackupFlow ne peut pas écrire dans son dossier de stockage de sauvegarde."
+msgstr "BackupFlow ne peut pas Ã©crire dans son dossier de stockage de sauvegarde."
 
 #: includes/class-backupflow-preflight.php:146
 msgid "BackupFlow could not confirm database access."
-msgstr "BackupFlow n'a pas pu confirmer l'accès à la base de données."
+msgstr "BackupFlow n'a pas pu confirmer l'accÃ¨s Ã  la base de donnÃ©es."
 
 #: includes/class-backupflow-admin.php:103
 msgid "BackupFlow could not finish this process. Please try again."
-msgstr "BackupFlow n'a pas pu terminer ce processus. Veuillez réessayer."
+msgstr "BackupFlow n'a pas pu terminer ce processus. Veuillez rÃ©essayer."
 
 #: includes/class-backupflow-preflight.php:123
 msgid "BackupFlow could not read free disk space. Make sure the server has enough room for the backup and temporary files."
@@ -206,35 +206,35 @@ msgstr "BackupFlow n'a pas pu lire l'espace disque disponible. Assurez-vous que 
 
 #: includes/class-backupflow-admin.php:104
 msgid "BackupFlow could not start the backup. Please try again."
-msgstr "BackupFlow n'a pas pu démarrer la sauvegarde. Veuillez réessayer."
+msgstr "BackupFlow n'a pas pu dÃ©marrer la sauvegarde. Veuillez rÃ©essayer."
 
 #: includes/class-backupflow-admin.php:105
 msgid "BackupFlow could not start the restore. Please try again."
-msgstr "BackupFlow n'a pas pu démarrer la restauration. Veuillez réessayer."
+msgstr "BackupFlow n'a pas pu dÃ©marrer la restauration. Veuillez rÃ©essayer."
 
 #: includes/class-backupflow-admin.php:347
 msgid "BackupFlow could not write the uploaded backup chunk."
-msgstr "BackupFlow n'a pas pu écrire le morceau de sauvegarde téléchargé."
+msgstr "BackupFlow n'a pas pu Ã©crire le morceau de sauvegarde tÃ©lÃ©chargÃ©."
 
 #: includes/class-backupflow-admin.php:824
 msgid "BackupFlow is built so future add-ons can register storage, schedules, WP-CLI commands, cloning, and professional support without changing the free backup engine."
-msgstr "BackupFlow est conçu pour que les futurs modules complémentaires puissent enregistrer le stockage, les planifications, les commandes WP-CLI, le clonage et l'assistance professionnelle sans modifier le moteur de sauvegarde gratuit."
+msgstr "BackupFlow est conÃ§u pour que les futurs modules complÃ©mentaires puissent enregistrer le stockage, les planifications, les commandes WP-CLI, le clonage et l'assistance professionnelle sans modifier le moteur de sauvegarde gratuit."
 
 #: includes/class-backupflow-preflight.php:55
 msgid "BackupFlow is ready to run this job."
-msgstr "BackupFlow est prêt à exécuter cette tâche."
+msgstr "BackupFlow est prÃªt Ã  exÃ©cuter cette tÃ¢che."
 
 #: includes/class-backupflow-admin.php:107
 msgid "BackupFlow is ready."
-msgstr "BackupFlow est prêt."
+msgstr "BackupFlow est prÃªt."
 
 #: includes/class-backupflow-admin.php:106 includes/class-backupflow-preflight.php:55
 msgid "BackupFlow needs attention before this job can run."
-msgstr "BackupFlow nécessite une attention particulière avant que cette tâche puisse s'exécuter."
+msgstr "BackupFlow nÃ©cessite une attention particuliÃ¨re avant que cette tÃ¢che puisse s'exÃ©cuter."
 
 #: includes/class-backupflow-admin.php:1084
 msgid "BackupFlow settings saved."
-msgstr "Paramètres BackupFlow enregistrés."
+msgstr "ParamÃ¨tres BackupFlow enregistrÃ©s."
 
 #: includes/class-backupflow-admin.php:643
 msgid "BackupFlow setup"
@@ -242,7 +242,7 @@ msgstr "Configuration BackupFlow"
 
 #: includes/class-backupflow-admin.php:690
 msgid "BackupFlow uploads the file first and shows live progress before any restore starts."
-msgstr "BackupFlow télécharge d'abord le fichier et affiche la progression en direct avant le début de toute restauration."
+msgstr "BackupFlow tÃ©lÃ©charge d'abord le fichier et affiche la progression en direct avant le dÃ©but de toute restauration."
 
 #: includes/class-backupflow-admin.php:64 includes/class-backupflow-admin.php:542 includes/class-backupflow-admin.php:578
 msgid "Backups"
@@ -250,11 +250,11 @@ msgstr "Sauvegardes"
 
 #: includes/class-backupflow-admin.php:808
 msgid "Backups to keep"
-msgstr "Sauvegardes à conserver"
+msgstr "Sauvegardes Ã  conserver"
 
 #: includes/class-backupflow-admin.php:1038
 msgid "Build a WordPress website in one click with starter templates and Core AI."
-msgstr "Créez un site Web WordPress en un clic avec les modèles de démarrage et Core AI."
+msgstr "CrÃ©ez un site Web WordPress en un clic avec les modÃ¨les de dÃ©marrage et Core AI."
 
 #: includes/class-backupflow-admin.php:91 includes/class-backupflow-admin.php:1070
 msgid "Cancel"
@@ -262,11 +262,11 @@ msgstr "Annuler"
 
 #: includes/class-backupflow-admin.php:95
 msgid "Cancelled"
-msgstr "Annulé"
+msgstr "AnnulÃ©"
 
 #: includes/class-backupflow-admin.php:115
 msgid "Checking server readiness for upload."
-msgstr "Vérification de la préparation du serveur pour le téléchargement."
+msgstr "VÃ©rification de la prÃ©paration du serveur pour le tÃ©lÃ©chargement."
 
 #: includes/class-backupflow-admin.php:286
 msgid "Choose a BackupFlow ZIP file."
@@ -278,7 +278,7 @@ msgstr "Choisissez d'abord une sauvegarde ZIP."
 
 #: includes/class-backupflow-admin.php:682
 msgid "Choose a backup file, then restore the database, files, or the full site. You can also upload the ZIP now and restore it later."
-msgstr "Choisissez un fichier de sauvegarde, puis restaurez la base de données, les fichiers ou le site complet. Vous pouvez également télécharger le ZIP maintenant et le restaurer plus tard."
+msgstr "Choisissez un fichier de sauvegarde, puis restaurez la base de donnÃ©es, les fichiers ou le site complet. Vous pouvez Ã©galement tÃ©lÃ©charger le ZIP maintenant et le restaurer plus tard."
 
 #: includes/class-backupflow-admin.php:855
 msgid "Choose backup storage"
@@ -290,7 +290,7 @@ msgstr "Choisissez la source de restauration"
 
 #: includes/class-backupflow-admin.php:633
 msgid "Choose what to include and where BackupFlow should store the archive."
-msgstr "Choisissez ce qui doit être inclus et où BackupFlow doit stocker l'archive."
+msgstr "Choisissez ce qui doit Ãªtre inclus et oÃ¹ BackupFlow doit stocker l'archive."
 
 #: includes/class-backupflow-admin.php:719
 msgid "Click to connect FTP storage."
@@ -330,27 +330,27 @@ msgstr "Cloudflare R2"
 
 #: includes/class-backupflow-admin.php:1008
 msgid "Coming soon"
-msgstr "Bientôt disponible"
+msgstr "BientÃ´t disponible"
 
 #: includes/class-backupflow-admin.php:823
 msgid "Coming soon premium power"
-msgstr "Bientôt une puissance premium"
+msgstr "BientÃ´t une puissance premium"
 
 #: includes/class-backupflow-admin.php:895
 msgid "Coming soon:"
-msgstr "À venir :"
+msgstr "Ã€ venir :"
 
 #: includes/class-backupflow-admin.php:89 includes/class-backupflow-job-store.php:133
 msgid "Complete"
-msgstr "Terminé"
+msgstr "TerminÃ©"
 
 #: includes/class-backupflow-preflight.php:169
 msgid "Configure FTP host, username, and password before using FTP storage."
-msgstr "Configurez l'hôte, le nom d'utilisateur et le mot de passe FTP avant d'utiliser le stockage FTP."
+msgstr "Configurez l'hÃ´te, le nom d'utilisateur et le mot de passe FTP avant d'utiliser le stockage FTP."
 
 #: includes/class-backupflow-admin.php:848
 msgid "Configure FTP settings before using this storage."
-msgstr "Configurez les paramètres FTP avant d'utiliser ce stockage."
+msgstr "Configurez les paramÃ¨tres FTP avant d'utiliser ce stockage."
 
 #: includes/class-backupflow-admin.php:891
 msgid "Configure first"
@@ -374,7 +374,7 @@ msgstr "Connectez Google Drive avant d'utiliser ce stockage."
 
 #: includes/class-backupflow-admin.php:757
 msgid "Connect a Google OAuth app and upload backups to Drive."
-msgstr "Connectez une application Google OAuth et téléchargez des sauvegardes sur Drive."
+msgstr "Connectez une application Google OAuth et tÃ©lÃ©chargez des sauvegardes sur Drive."
 
 #: includes/class-backupflow-admin.php:711
 msgid "Connect a storage account"
@@ -386,27 +386,27 @@ msgstr "Connectez-vous d'abord"
 
 #: includes/class-backupflow-admin.php:721 includes/class-backupflow-admin.php:729
 msgid "Connected"
-msgstr "Connecté"
+msgstr "ConnectÃ©"
 
 #: includes/class-backupflow-admin.php:719 includes/class-backupflow-admin.php:727
 msgid "Connected and ready to manage."
-msgstr "Connecté et prêt à gérer."
+msgstr "ConnectÃ© et prÃªt Ã  gÃ©rer."
 
 #: includes/class-backupflow-admin.php:712
 msgid "Connected storage can be used for cloud backup workflows. Configure a storage account first, then return here to restore from uploaded backups."
-msgstr "Le stockage connecté peut être utilisé pour les flux de travail de sauvegarde dans le cloud. Configurez d'abord un compte de stockage, puis revenez ici pour restaurer à partir des sauvegardes téléchargées."
+msgstr "Le stockage connectÃ© peut Ãªtre utilisÃ© pour les flux de travail de sauvegarde dans le cloud. Configurez d'abord un compte de stockage, puis revenez ici pour restaurer Ã  partir des sauvegardes tÃ©lÃ©chargÃ©es."
 
 #: includes/class-backupflow-file-system.php:397
 msgid "Could not add a file to the backup archive."
-msgstr "Impossible d'ajouter un fichier à l'archive de sauvegarde."
+msgstr "Impossible d'ajouter un fichier Ã  l'archive de sauvegarde."
 
 #: includes/class-backupflow-file-system.php:228
 msgid "Could not add a website file to the backup archive."
-msgstr "Impossible d'ajouter un fichier de site Web à l'archive de sauvegarde."
+msgstr "Impossible d'ajouter un fichier de site Web Ã  l'archive de sauvegarde."
 
 #: includes/class-backupflow-file-system.php:381
 msgid "Could not add the backup manifest to the archive."
-msgstr "Impossible d'ajouter le manifeste de sauvegarde à l'archive."
+msgstr "Impossible d'ajouter le manifeste de sauvegarde Ã  l'archive."
 
 #: includes/class-backupflow-storage-ftp.php:167
 msgid "Could not connect to the FTP server."
@@ -414,47 +414,47 @@ msgstr "Impossible de se connecter au serveur FTP."
 
 #: includes/class-backupflow-database.php:29
 msgid "Could not create database export folder."
-msgstr "Impossible de créer le dossier d'exportation de la base de données."
+msgstr "Impossible de crÃ©er le dossier d'exportation de la base de donnÃ©es."
 
 #: includes/class-backupflow-database.php:98
 msgid "Could not create database parts folder."
-msgstr "Impossible de créer le dossier de pièces de base de données."
+msgstr "Impossible de crÃ©er le dossier de piÃ¨ces de base de donnÃ©es."
 
 #: includes/class-backupflow-file-system.php:17 includes/class-backupflow-file-system.php:148
 msgid "Could not create temporary file list folder."
-msgstr "Impossible de créer un dossier de liste de fichiers temporaire."
+msgstr "Impossible de crÃ©er un dossier de liste de fichiers temporaire."
 
 #: includes/class-backupflow-backup-manager.php:106
 msgid "Could not create the temporary backup folder."
-msgstr "Impossible de créer le dossier de sauvegarde temporaire."
+msgstr "Impossible de crÃ©er le dossier de sauvegarde temporaire."
 
 #: includes/class-backupflow-file-system.php:22 includes/class-backupflow-file-system.php:153
 msgid "Could not create the temporary file list."
-msgstr "Impossible de créer la liste de fichiers temporaires."
+msgstr "Impossible de crÃ©er la liste de fichiers temporaires."
 
 #: includes/class-backupflow-restore-manager.php:142
 msgid "Could not create the temporary restore folder."
-msgstr "Impossible de créer le dossier de restauration temporaire."
+msgstr "Impossible de crÃ©er le dossier de restauration temporaire."
 
 #: includes/class-backupflow-storage-ftp.php:158
 msgid "Could not download the FTP backup."
-msgstr "Impossible de télécharger la sauvegarde FTP."
+msgstr "Impossible de tÃ©lÃ©charger la sauvegarde FTP."
 
 #: includes/class-backupflow-restore-manager.php:346
 msgid "Could not extract a database part from the backup."
-msgstr "Impossible d'extraire une partie de la base de données de la sauvegarde."
+msgstr "Impossible d'extraire une partie de la base de donnÃ©es de la sauvegarde."
 
 #: includes/class-backupflow-storage-ftp.php:102
 msgid "Could not finalize the FTP backup upload."
-msgstr "Impossible de finaliser le téléchargement de la sauvegarde FTP."
+msgstr "Impossible de finaliser le tÃ©lÃ©chargement de la sauvegarde FTP."
 
 #: includes/class-backupflow-file-system.php:237 includes/class-backupflow-file-system.php:384 includes/class-backupflow-file-system.php:400
 msgid "Could not finish writing the backup archive."
-msgstr "Impossible de terminer l'écriture de l'archive de sauvegarde."
+msgstr "Impossible de terminer l'Ã©criture de l'archive de sauvegarde."
 
 #: includes/class-backupflow-migrator.php:30
 msgid "Could not move the uploaded backup into BackupFlow storage."
-msgstr "Impossible de déplacer la sauvegarde téléchargée vers le stockage BackupFlow."
+msgstr "Impossible de dÃ©placer la sauvegarde tÃ©lÃ©chargÃ©e vers le stockage BackupFlow."
 
 #: includes/class-backupflow-database.php:229
 msgid "Could not open the SQL file."
@@ -466,67 +466,67 @@ msgstr "Impossible d'ouvrir l'archive de sauvegarde."
 
 #: includes/class-backupflow-storage-ftp.php:80
 msgid "Could not read the backup archive for FTP upload."
-msgstr "Impossible de lire l'archive de sauvegarde pour le téléchargement FTP."
+msgstr "Impossible de lire l'archive de sauvegarde pour le tÃ©lÃ©chargement FTP."
 
 #: includes/class-backupflow-storage-google-drive.php:149
 msgid "Could not read the backup archive for Google Drive upload."
-msgstr "Impossible de lire l'archive de sauvegarde pour le téléchargement Google Drive."
+msgstr "Impossible de lire l'archive de sauvegarde pour le tÃ©lÃ©chargement Google Drive."
 
 #: includes/class-backupflow-admin.php:335
 msgid "Could not read this upload chunk. Please retry."
-msgstr "Impossible de lire ce morceau de téléchargement. Veuillez réessayer."
+msgstr "Impossible de lire ce morceau de tÃ©lÃ©chargement. Veuillez rÃ©essayer."
 
 #: includes/class-backupflow-storage-google-drive.php:343
 msgid "Could not refresh the Google Drive access token."
-msgstr "Impossible d'actualiser le jeton d'accès Google Drive."
+msgstr "Impossible d'actualiser le jeton d'accÃ¨s Google Drive."
 
 #: includes/class-backupflow-file-system.php:57
 msgid "Could not update the temporary file list."
-msgstr "Impossible de mettre à jour la liste des fichiers temporaires."
+msgstr "Impossible de mettre Ã  jour la liste des fichiers temporaires."
 
 #: includes/class-backupflow-storage-ftp.php:95
 msgid "Could not upload the backup to FTP."
-msgstr "Impossible de télécharger la sauvegarde sur FTP."
+msgstr "Impossible de tÃ©lÃ©charger la sauvegarde sur FTP."
 
 #: includes/class-backupflow-admin.php:63 includes/class-backupflow-admin.php:172 includes/class-backupflow-admin.php:534 includes/class-backupflow-admin.php:580 includes/class-backupflow-admin.php:644 includes/class-backupflow-admin.php:903
 msgid "Create Backup"
-msgstr "Créer une sauvegarde"
+msgstr "CrÃ©er une sauvegarde"
 
 #: includes/class-backupflow-admin.php:538
 msgid "Create Your First Backup"
-msgstr "Créez votre première sauvegarde"
+msgstr "CrÃ©ez votre premiÃ¨re sauvegarde"
 
 #: includes/class-backupflow-admin.php:632
 msgid "Create a backup"
-msgstr "Créer une sauvegarde"
+msgstr "CrÃ©er une sauvegarde"
 
 #: includes/class-backupflow-admin.php:602
 msgid "Create a complete backup, restore in one click, or import a backup from another domain with URL rewriting handled during restore."
-msgstr "Créez une sauvegarde complète, restaurez en un clic ou importez une sauvegarde depuis un autre domaine avec la réécriture URL gérée lors de la restauration."
+msgstr "CrÃ©ez une sauvegarde complÃ¨te, restaurez en un clic ou importez une sauvegarde depuis un autre domaine avec la rÃ©Ã©criture URL gÃ©rÃ©e lors de la restauration."
 
 #: includes/class-backupflow-admin.php:879
 msgid "Create a manual backup immediately."
-msgstr "Créez immédiatement une sauvegarde manuelle."
+msgstr "CrÃ©ez immÃ©diatement une sauvegarde manuelle."
 
 #: includes/class-backupflow-admin.php:811
 msgid "Create a safety database backup before database restore"
-msgstr "Créer une sauvegarde de base de données de sécurité avant la restauration de la base de données"
+msgstr "CrÃ©er une sauvegarde de base de donnÃ©es de sÃ©curitÃ© avant la restauration de la base de donnÃ©es"
 
 #: includes/class-backupflow-admin.php:913
 msgid "Create your first backup to unlock restore and migration actions."
-msgstr "Créez votre première sauvegarde pour débloquer les actions de restauration et de migration."
+msgstr "CrÃ©ez votre premiÃ¨re sauvegarde pour dÃ©bloquer les actions de restauration et de migration."
 
 #: includes/class-backupflow-restore-manager.php:183
 msgid "Creating a safety database backup before restore."
-msgstr "Création d'une sauvegarde de la base de données de sécurité avant la restauration."
+msgstr "CrÃ©ation d'une sauvegarde de la base de donnÃ©es de sÃ©curitÃ© avant la restauration."
 
 #: includes/class-backupflow-restore-manager.php:211
 msgid "Creating safety database backup"
-msgstr "Création d'une sauvegarde de la base de données de sécurité"
+msgstr "CrÃ©ation d'une sauvegarde de la base de donnÃ©es de sÃ©curitÃ©"
 
 #: includes/class-backupflow-admin.php:880
 msgid "Daily, weekly, monthly, and custom intervals are coming soon."
-msgstr "Des intervalles quotidiens, hebdomadaires, mensuels et personnalisés seront bientôt disponibles."
+msgstr "Des intervalles quotidiens, hebdomadaires, mensuels et personnalisÃ©s seront bientÃ´t disponibles."
 
 #: includes/class-backupflow-admin.php:62 includes/class-backupflow-admin.php:530
 msgid "Dashboard"
@@ -534,55 +534,55 @@ msgstr "Tableau de bord"
 
 #: includes/class-backupflow-admin.php:868
 msgid "Database"
-msgstr "Base de données"
+msgstr "Base de donnÃ©es"
 
 #: includes/class-backupflow-database.php:224
 msgid "Database SQL file is missing or unreadable."
-msgstr "Le fichier de la base de données SQL est manquant ou illisible."
+msgstr "Le fichier de la base de donnÃ©es SQL est manquant ou illisible."
 
 #: includes/class-backupflow-preflight.php:143
 msgid "Database access"
-msgstr "Accès à la base de données"
+msgstr "AccÃ¨s Ã  la base de donnÃ©es"
 
 #: includes/class-backupflow-preflight.php:146
 msgid "Database connection is available."
-msgstr "La connexion à la base de données est disponible."
+msgstr "La connexion Ã  la base de donnÃ©es est disponible."
 
 #: includes/class-backupflow-backup-manager.php:136
 msgid "Database export %1$d/%2$d: %3$s"
-msgstr "Exportation de base de données%1$d/%2$d :%3$s"
+msgstr "Exportation de base de donnÃ©es%1$d/%2$dÂ :%3$s"
 
 #: includes/class-backupflow-backup-manager.php:168
 msgid "Database export added to the backup package."
-msgstr "Exportation de base de données ajoutée au package de sauvegarde."
+msgstr "Exportation de base de donnÃ©es ajoutÃ©e au package de sauvegarde."
 
 #: includes/class-backupflow-backup-manager.php:164
 msgid "Database export complete"
-msgstr "Exportation de la base de données terminée"
+msgstr "Exportation de la base de donnÃ©es terminÃ©e"
 
 #: includes/class-backupflow-database.php:475
 msgid "Database export state is missing the parts folder."
-msgstr "L'état d'exportation de la base de données ne contient pas le dossier de pièces."
+msgstr "L'Ã©tat d'exportation de la base de donnÃ©es ne contient pas le dossier de piÃ¨ces."
 
 #: includes/class-backupflow-restore-manager.php:329
 msgid "Database files ready for import"
-msgstr "Fichiers de base de données prêts à être importés"
+msgstr "Fichiers de base de donnÃ©es prÃªts Ã  Ãªtre importÃ©s"
 
 #: includes/class-backupflow-restore-manager.php:369
 msgid "Database import complete"
-msgstr "Importation de la base de données terminée"
+msgstr "Importation de la base de donnÃ©es terminÃ©e"
 
 #: includes/class-backupflow-restore-manager.php:371
 msgid "Database import complete. URL rewrite is next."
-msgstr "Importation de la base de données terminée. La réécriture de URL est la suivante."
+msgstr "Importation de la base de donnÃ©es terminÃ©e. La rÃ©Ã©criture de URL est la suivante."
 
 #: includes/class-backupflow-database.php:261
 msgid "Database import failed."
-msgstr "L'importation de la base de données a échoué."
+msgstr "L'importation de la base de donnÃ©es a Ã©chouÃ©."
 
 #: includes/class-backupflow-admin.php:696
 msgid "Database only"
-msgstr "Base de données uniquement"
+msgstr "Base de donnÃ©es uniquement"
 
 #: includes/class-backupflow-admin.php:948
 msgid "Delete"
@@ -590,7 +590,7 @@ msgstr "Supprimer"
 
 #: includes/class-backupflow-admin.php:110
 msgid "Delete this backup permanently?"
-msgstr "Supprimer définitivement cette sauvegarde ?"
+msgstr "Supprimer dÃ©finitivement cette sauvegardeÂ ?"
 
 #: includes/class-backupflow-preflight.php:120 includes/class-backupflow-preflight.php:130
 msgid "Disk space"
@@ -598,23 +598,23 @@ msgstr "Espace disque"
 
 #: includes/class-backupflow-admin.php:810
 msgid "Do not overwrite wp-config.php during restore"
-msgstr "Ne pas écraser wp-config.php pendant la restauration"
+msgstr "Ne pas Ã©craser wp-config.php pendant la restauration"
 
 #: includes/class-backupflow-admin.php:947
 msgid "Download"
-msgstr "Télécharger"
+msgstr "TÃ©lÃ©charger"
 
 #: includes/class-backupflow-admin.php:93 includes/class-backupflow-admin.php:1068
 msgid "Download Backup"
-msgstr "Télécharger la sauvegarde"
+msgstr "TÃ©lÃ©charger la sauvegarde"
 
 #: includes/class-backupflow-admin.php:618
 msgid "Download, restore, or delete ready backups from one place."
-msgstr "Téléchargez, restaurez ou supprimez les sauvegardes prêtes à partir d'un seul endroit."
+msgstr "TÃ©lÃ©chargez, restaurez ou supprimez les sauvegardes prÃªtes Ã  partir d'un seul endroit."
 
 #: includes/class-backupflow-admin.php:689
 msgid "Drop your backup ZIP here or choose a file"
-msgstr "Déposez votre sauvegarde ZIP ici ou choisissez un fichier"
+msgstr "DÃ©posez votre sauvegarde ZIP ici ou choisissez un fichier"
 
 #: includes/class-backupflow-admin.php:833 includes/class-backupflow-admin.php:896 includes/class-backupflow-admin.php:995
 msgid "Dropbox"
@@ -622,7 +622,7 @@ msgstr "Dropbox"
 
 #: includes/class-backupflow-admin.php:657
 msgid "Every local, imported, and cloud-uploaded backup remains restorable from this catalog while the archive exists locally."
-msgstr "Chaque sauvegarde locale, importée et téléchargée dans le cloud reste restaurable à partir de ce catalogue tant que l'archive existe localement."
+msgstr "Chaque sauvegarde locale, importÃ©e et tÃ©lÃ©chargÃ©e dans le cloud reste restaurable Ã  partir de ce catalogue tant que l'archive existe localement."
 
 #: includes/class-backupflow-admin.php:809
 msgid "Excluded paths"
@@ -630,19 +630,19 @@ msgstr "Chemins exclus"
 
 #: includes/class-backupflow-backup-manager.php:164
 msgid "Exporting database tables"
-msgstr "Exportation des tables de base de données"
+msgstr "Exportation des tables de base de donnÃ©es"
 
 #: includes/class-backupflow-backup-manager.php:123
 msgid "Exporting database tables in resumable parts."
-msgstr "Exportation des tables de base de données dans des parties pouvant être reprises."
+msgstr "Exportation des tables de base de donnÃ©es dans des parties pouvant Ãªtre reprises."
 
 #: includes/class-backupflow-restore-manager.php:356
 msgid "Extracting database files"
-msgstr "Extraction des fichiers de base de données"
+msgstr "Extraction des fichiers de base de donnÃ©es"
 
 #: includes/class-backupflow-restore-manager.php:340
 msgid "Extracting database part %s."
-msgstr "Extraction de la partie base de données%s."
+msgstr "Extraction de la partie base de donnÃ©es%s."
 
 #: includes/class-backupflow-admin.php:718 includes/class-backupflow-admin.php:756 includes/class-backupflow-admin.php:891 includes/class-backupflow-storage-ftp.php:37 includes/class-backupflow-storage.php:31
 msgid "FTP"
@@ -650,19 +650,19 @@ msgstr "FTP"
 
 #: includes/class-backupflow-storage-ftp.php:55
 msgid "FTP is not configured."
-msgstr "FTP n'est pas configuré."
+msgstr "FTP n'est pas configurÃ©."
 
 #: includes/class-backupflow-storage-ftp.php:172
 msgid "FTP login failed."
-msgstr "La connexion FTP a échoué."
+msgstr "La connexion FTP a Ã©chouÃ©."
 
 #: includes/class-backupflow-admin.php:765 includes/class-backupflow-preflight.php:166
 msgid "FTP settings"
-msgstr "Paramètres FTP"
+msgstr "ParamÃ¨tres FTP"
 
 #: includes/class-backupflow-preflight.php:169
 msgid "FTP settings are ready."
-msgstr "Les paramètres FTP sont prêts."
+msgstr "Les paramÃ¨tres FTP sont prÃªts."
 
 #: includes/class-backupflow-preflight.php:153
 msgid "FTP support"
@@ -670,15 +670,15 @@ msgstr "Prise en charge de FTP"
 
 #: includes/class-backupflow-admin.php:90
 msgid "Failed"
-msgstr "Échec"
+msgstr "Ã‰chec"
 
 #: includes/class-backupflow-restore-manager.php:310
 msgid "File restore complete. Database restore is next."
-msgstr "Restauration du fichier terminée. La restauration de la base de données est la suivante."
+msgstr "Restauration du fichier terminÃ©e. La restauration de la base de donnÃ©es est la suivante."
 
 #: includes/class-backupflow-backup-manager.php:208
 msgid "File scan complete"
-msgstr "Analyse du fichier terminée"
+msgstr "Analyse du fichier terminÃ©e"
 
 #: includes/class-backupflow-admin.php:863
 msgid "Files"
@@ -690,7 +690,7 @@ msgstr "Fichiers uniquement"
 
 #: includes/class-backupflow-admin.php:1032
 msgid "Find revenue leaks, fix important SEO issues, and create watermark-free WooCommerce UGC images, product videos, and more."
-msgstr "Trouvez les fuites de revenus, résolvez les problèmes de référencement importants et créez des images UGC WooCommerce sans filigrane, des vidéos de produits et bien plus encore."
+msgstr "Trouvez les fuites de revenus, rÃ©solvez les problÃ¨mes de rÃ©fÃ©rencement importants et crÃ©ez des images UGC WooCommerce sans filigrane, des vidÃ©os de produits et bien plus encore."
 
 #: includes/class-backupflow-admin.php:785
 msgid "Folder ID"
@@ -698,7 +698,7 @@ msgstr "ID de dossier"
 
 #: includes/class-backupflow-admin.php:698
 msgid "Full restore"
-msgstr "Restauration complète"
+msgstr "Restauration complÃ¨te"
 
 #: includes/class-backupflow-admin.php:726 includes/class-backupflow-admin.php:757 includes/class-backupflow-admin.php:892 includes/class-backupflow-storage-google-drive.php:35 includes/class-backupflow-storage.php:32
 msgid "Google Drive"
@@ -706,55 +706,55 @@ msgstr "Google Drive"
 
 #: includes/class-backupflow-storage-google-drive.php:57
 msgid "Google Drive client credentials are required first."
-msgstr "Les informations d’identification du client Google Drive sont requises en premier."
+msgstr "Les informations dâ€™identification du client Google Drive sont requises en premier."
 
 #: includes/class-backupflow-admin.php:1087
 msgid "Google Drive connected successfully."
-msgstr "Google Drive connecté avec succès."
+msgstr "Google Drive connectÃ© avec succÃ¨s."
 
 #: includes/class-backupflow-admin.php:1088
 msgid "Google Drive connection failed."
-msgstr "La connexion Google Drive a échoué."
+msgstr "La connexion Google Drive a Ã©chouÃ©."
 
 #: includes/class-backupflow-storage-google-drive.php:137
 msgid "Google Drive did not start a resumable upload session."
-msgstr "Google Drive n'a pas démarré une session de téléchargement avec reprise."
+msgstr "Google Drive n'a pas dÃ©marrÃ© une session de tÃ©lÃ©chargement avec reprise."
 
 #: includes/class-backupflow-storage-google-drive.php:292
 msgid "Google Drive download failed."
-msgstr "Le téléchargement de Google Drive a échoué."
+msgstr "Le tÃ©lÃ©chargement de Google Drive a Ã©chouÃ©."
 
 #: includes/class-backupflow-preflight.php:180
 msgid "Google Drive is connected."
-msgstr "Google Drive est connecté."
+msgstr "Google Drive est connectÃ©."
 
 #: includes/class-backupflow-storage-google-drive.php:97
 msgid "Google Drive is not configured."
-msgstr "Google Drive n'est pas configuré."
+msgstr "Google Drive n'est pas configurÃ©."
 
 #: includes/class-backupflow-storage-google-drive.php:297
 msgid "Google Drive returned an empty backup file."
-msgstr "Google Drive a renvoyé un fichier de sauvegarde vide."
+msgstr "Google Drive a renvoyÃ© un fichier de sauvegarde vide."
 
 #: includes/class-backupflow-admin.php:1089
 msgid "Google Drive security check failed. Please try again."
-msgstr "Le contrôle de sécurité Google Drive a échoué. Veuillez réessayer."
+msgstr "Le contrÃ´le de sÃ©curitÃ© Google Drive a Ã©chouÃ©. Veuillez rÃ©essayer."
 
 #: includes/class-backupflow-admin.php:781 includes/class-backupflow-preflight.php:177
 msgid "Google Drive settings"
-msgstr "Paramètres Google Drive"
+msgstr "ParamÃ¨tres Google Drive"
 
 #: includes/class-backupflow-storage-google-drive.php:193
 msgid "Google Drive upload failed."
-msgstr "Échec du téléchargement de Google Drive."
+msgstr "Ã‰chec du tÃ©lÃ©chargement de Google Drive."
 
 #: includes/class-backupflow-storage-google-drive.php:80
 msgid "Google did not return a refresh token. Reconnect with consent prompt enabled."
-msgstr "Google n'a pas renvoyé de jeton d'actualisation. Reconnectez-vous avec l’invite de consentement activée."
+msgstr "Google n'a pas renvoyÃ© de jeton d'actualisation. Reconnectez-vous avec lâ€™invite de consentement activÃ©e."
 
 #: includes/class-backupflow-admin.php:767
 msgid "Host"
-msgstr "Hôte"
+msgstr "HÃ´te"
 
 #: includes/class-backupflow-admin.php:1037
 msgid "Immersa Builder + Core"
@@ -770,23 +770,23 @@ msgstr "Importer une sauvegarde"
 
 #: includes/class-backupflow-restore-manager.php:404
 msgid "Imported %d SQL statements."
-msgstr "Instructions%d SQL importées."
+msgstr "Instructions%d SQL importÃ©es."
 
 #: includes/class-backupflow-restore-manager.php:387
 msgid "Importing database part %1$d/%2$d."
-msgstr "Importation de la partie base de données%1$d/%2$d."
+msgstr "Importation de la partie base de donnÃ©es%1$d/%2$d."
 
 #: includes/class-backupflow-restore-manager.php:419
 msgid "Importing database tables"
-msgstr "Importation de tables de base de données"
+msgstr "Importation de tables de base de donnÃ©es"
 
 #: includes/class-backupflow-admin.php:863
 msgid "Include WordPress core, plugins, themes, uploads, and content files."
-msgstr "Incluez le noyau WordPress, les plugins, les thèmes, les téléchargements et les fichiers de contenu."
+msgstr "Incluez le noyau WordPress, les plugins, les thÃ¨mes, les tÃ©lÃ©chargements et les fichiers de contenu."
 
 #: includes/class-backupflow-admin.php:868
 msgid "Include posts, pages, users, settings, plugin data, and serialized WordPress options."
-msgstr "Incluez les publications, les pages, les utilisateurs, les paramètres, les données du plugin et les options WordPress sérialisées."
+msgstr "Incluez les publications, les pages, les utilisateurs, les paramÃ¨tres, les donnÃ©es du plugin et les options WordPress sÃ©rialisÃ©es."
 
 #: includes/class-backupflow-admin.php:755 includes/class-backupflow-admin.php:756 includes/class-backupflow-admin.php:757
 msgid "Included"
@@ -798,7 +798,7 @@ msgstr "Emploi introuvable."
 
 #: includes/class-backupflow-admin.php:608
 msgid "Latest backup"
-msgstr "Dernière sauvegarde"
+msgstr "DerniÃ¨re sauvegarde"
 
 #: includes/class-backupflow-admin.php:770 includes/class-backupflow-admin.php:784
 msgid "Leave blank to keep existing"
@@ -810,7 +810,7 @@ msgstr "Locale"
 
 #: includes/class-backupflow-admin.php:1021
 msgid "Local backups, FTP, Google Drive, one-click restore, migration URL rewrite, database-only and files-only backups."
-msgstr "Sauvegardes locales, FTP, Google Drive, restauration en un clic, migration réécriture URL, sauvegardes de base de données uniquement et de fichiers uniquement."
+msgstr "Sauvegardes locales, FTP, Google Drive, restauration en un clic, migration rÃ©Ã©criture URL, sauvegardes de base de donnÃ©es uniquement et de fichiers uniquement."
 
 #: includes/class-backupflow-admin.php:609
 msgid "Local storage"
@@ -850,7 +850,7 @@ msgstr "Non, continue"
 
 #: includes/class-backupflow-admin.php:608
 msgid "Not created yet"
-msgstr "Pas encore créé"
+msgstr "Pas encore crÃ©Ã©"
 
 #: includes/class-backupflow-admin.php:897
 msgid "OneDrive"
@@ -858,11 +858,11 @@ msgstr "OneDrive"
 
 #: includes/class-backupflow-preflight.php:133
 msgid "Only %1$s is free. BackupFlow needs at least %2$s for this job."
-msgstr "Seul%1$s est gratuit. BackupFlow a besoin d'au moins%2$s pour cette tâche."
+msgstr "Seul%1$s est gratuit. BackupFlow a besoin d'au moins%2$s pour cette tÃ¢che."
 
 #: includes/class-backupflow-migrator.php:22
 msgid "Only BackupFlow ZIP backups can be imported."
-msgstr "Seules les sauvegardes BackupFlow ZIP peuvent être importées."
+msgstr "Seules les sauvegardes BackupFlow ZIP peuvent Ãªtre importÃ©es."
 
 #: includes/class-backupflow-preflight.php:204
 msgid "Outbound connection"
@@ -874,7 +874,7 @@ msgstr "Architecture PHP"
 
 #: includes/class-backupflow-backup-manager.php:243
 msgid "Packaged files %1$d/%2$d."
-msgstr "Fichiers packagés%1$d/%2$d."
+msgstr "Fichiers packagÃ©s%1$d/%2$d."
 
 #: includes/class-backupflow-backup-manager.php:237
 msgid "Packaging website files"
@@ -894,7 +894,7 @@ msgstr "Mot de passe"
 
 #: includes/class-backupflow-admin.php:437 includes/class-backupflow-admin.php:490
 msgid "Permission denied."
-msgstr "Autorisation refusée."
+msgstr "Autorisation refusÃ©e."
 
 #: includes/class-backupflow-admin.php:1040
 msgid "Plugin"
@@ -914,19 +914,19 @@ msgstr "Feuille de route du stockage premium"
 
 #: includes/class-backupflow-backup-manager.php:111
 msgid "Preparing backup workspace"
-msgstr "Préparation de l'espace de travail de sauvegarde"
+msgstr "PrÃ©paration de l'espace de travail de sauvegarde"
 
 #: includes/class-backupflow-restore-manager.php:150
 msgid "Preparing restore workspace"
-msgstr "Préparation de l'espace de travail de restauration"
+msgstr "PrÃ©paration de l'espace de travail de restauration"
 
 #: includes/class-backupflow-admin.php:108
 msgid "Preparing secure upload"
-msgstr "Préparation du téléchargement sécurisé"
+msgstr "PrÃ©paration du tÃ©lÃ©chargement sÃ©curisÃ©"
 
 #: includes/class-backupflow-admin.php:1055
 msgid "Preparing..."
-msgstr "Préparation..."
+msgstr "PrÃ©paration..."
 
 #: includes/class-backupflow-admin.php:838
 msgid "Priority support"
@@ -934,15 +934,15 @@ msgstr "Assistance prioritaire"
 
 #: includes/class-backupflow-job-store.php:175
 msgid "Process cancelled by the administrator."
-msgstr "Processus annulé par l'administrateur."
+msgstr "Processus annulÃ© par l'administrateur."
 
 #: includes/class-backupflow-admin.php:1054
 msgid "Process running"
-msgstr "Processus en cours d'exécution"
+msgstr "Processus en cours d'exÃ©cution"
 
 #: includes/class-backupflow-admin.php:1026
 msgid "Programmatic SEO pages and growth content for WordPress."
-msgstr "Pages de référencement programmatique et contenu de croissance pour WordPress."
+msgstr "Pages de rÃ©fÃ©rencement programmatique et contenu de croissance pour WordPress."
 
 #: includes/class-backupflow-job-store.php:71
 msgid "Queued"
@@ -950,15 +950,15 @@ msgstr "En file d'attente"
 
 #: includes/class-backupflow-admin.php:891 includes/class-backupflow-admin.php:892
 msgid "Ready"
-msgstr "Prêt"
+msgstr "PrÃªt"
 
 #: includes/class-backupflow-admin.php:601
 msgid "Ready to protect this WordPress site?"
-msgstr "Prêt à protéger ce site WordPress ?"
+msgstr "PrÃªt Ã  protÃ©ger ce site WordPressÂ ?"
 
 #: includes/class-backupflow-admin.php:617
 msgid "Recent backups"
-msgstr "Sauvegardes récentes"
+msgstr "Sauvegardes rÃ©centes"
 
 #: includes/class-backupflow-admin.php:771
 msgid "Remote folder"
@@ -978,7 +978,7 @@ msgstr "Restaurer depuis le cloud"
 
 #: includes/class-backupflow-admin.php:680
 msgid "Restore from file"
-msgstr "Restaurer à partir d'un fichier"
+msgstr "Restaurer Ã  partir d'un fichier"
 
 #: includes/class-backupflow-admin.php:120
 msgid "Restore in progress"
@@ -986,11 +986,11 @@ msgstr "Restauration en cours"
 
 #: includes/class-backupflow-restore-manager.php:72
 msgid "Restore job created."
-msgstr "Restaurer le travail créé."
+msgstr "Restaurer le travail crÃ©Ã©."
 
 #: includes/class-backupflow-restore-manager.php:80
 msgid "Restore job not found."
-msgstr "Tâche de restauration introuvable."
+msgstr "TÃ¢che de restauration introuvable."
 
 #: includes/class-backupflow-admin.php:737
 msgid "Restore points"
@@ -998,11 +998,11 @@ msgstr "Points de restauration"
 
 #: includes/class-backupflow-restore-manager.php:172
 msgid "Restore workspace ready. Backup manifest verified."
-msgstr "Restaurez l’espace de travail prêt. Manifeste de sauvegarde vérifié."
+msgstr "Restaurez lâ€™espace de travail prÃªt. Manifeste de sauvegarde vÃ©rifiÃ©."
 
 #: includes/class-backupflow-restore-manager.php:298
 msgid "Restored files %1$d/%2$d."
-msgstr "Fichiers restaurés%1$d/%2$d."
+msgstr "Fichiers restaurÃ©s%1$d/%2$d."
 
 #: includes/class-backupflow-restore-manager.php:292
 msgid "Restoring website files"
@@ -1010,19 +1010,19 @@ msgstr "Restauration des fichiers du site Web"
 
 #: includes/class-backupflow-restore-manager.php:443
 msgid "Rewriting URLs from %1$s to %2$s."
-msgstr "Réécriture de URLs de%1$s à%2$s."
+msgstr "RÃ©Ã©criture de URLs de%1$s Ã %2$s."
 
 #: includes/class-backupflow-restore-manager.php:470
 msgid "Rewriting site URLs"
-msgstr "Site de réécriture URLs"
+msgstr "Site de rÃ©Ã©criture URLs"
 
 #: includes/class-backupflow-restore-manager.php:460
 msgid "Rewritten URLs in %1$s. Rows updated: %2$d."
-msgstr "URLs réécrit en%1$s. Lignes mises à jour :%2$d."
+msgstr "URLs rÃ©Ã©crit en%1$s. Lignes mises Ã  jourÂ :%2$d."
 
 #: includes/class-backupflow-admin.php:604 includes/class-backupflow-admin.php:659
 msgid "Run Full Backup"
-msgstr "Exécuter une sauvegarde complète"
+msgstr "ExÃ©cuter une sauvegarde complÃ¨te"
 
 #: includes/class-backupflow-admin.php:879
 msgid "Run now"
@@ -1030,11 +1030,11 @@ msgstr "Courez maintenant"
 
 #: includes/class-backupflow-admin.php:854
 msgid "Run now or schedule later"
-msgstr "Exécutez maintenant ou planifiez plus tard"
+msgstr "ExÃ©cutez maintenant ou planifiez plus tard"
 
 #: includes/class-backupflow-admin.php:611
 msgid "Runtime"
-msgstr "Durée d'exécution"
+msgstr "DurÃ©e d'exÃ©cution"
 
 #: includes/class-backupflow-admin.php:832 includes/class-backupflow-admin.php:999
 msgid "SFTP / FTPS"
@@ -1042,15 +1042,15 @@ msgstr "SFTP / FTPS"
 
 #: includes/class-backupflow-restore-manager.php:269
 msgid "Safety backup created"
-msgstr "Sauvegarde de sécurité créée"
+msgstr "Sauvegarde de sÃ©curitÃ© crÃ©Ã©e"
 
 #: includes/class-backupflow-restore-manager.php:196
 msgid "Safety backup export %1$d/%2$d: %3$s"
-msgstr "Exportation de sauvegarde de sécurité%1$d/%2$d :%3$s"
+msgstr "Exportation de sauvegarde de sÃ©curitÃ©%1$d/%2$dÂ :%3$s"
 
 #: includes/class-backupflow-restore-manager.php:272
 msgid "Safety database backup created."
-msgstr "Sauvegarde de la base de données de sécurité créée."
+msgstr "Sauvegarde de la base de donnÃ©es de sÃ©curitÃ© crÃ©Ã©e."
 
 #: includes/class-backupflow-admin.php:873 includes/class-backupflow-admin.php:884
 msgid "Save & Continue"
@@ -1062,15 +1062,15 @@ msgstr "Enregistrer FTP"
 
 #: includes/class-backupflow-admin.php:788
 msgid "Save Google Settings"
-msgstr "Enregistrer les paramètres Google"
+msgstr "Enregistrer les paramÃ¨tres Google"
 
 #: includes/class-backupflow-admin.php:813
 msgid "Save Settings"
-msgstr "Enregistrer les paramètres"
+msgstr "Enregistrer les paramÃ¨tres"
 
 #: includes/class-backupflow-backup-manager.php:191
 msgid "Scanned %1$d files, skipped %2$d excluded files."
-msgstr "Fichiers%1$d analysés, fichiers exclus%2$d ignorés."
+msgstr "Fichiers%1$d analysÃ©s, fichiers exclus%2$d ignorÃ©s."
 
 #: includes/class-backupflow-backup-manager.php:180
 msgid "Scanning WordPress files and applying exclusions."
@@ -1086,19 +1086,19 @@ msgstr "Rechercher des sauvegardes"
 
 #: includes/class-backupflow-admin.php:853
 msgid "Select files and database"
-msgstr "Sélectionnez les fichiers et la base de données"
+msgstr "SÃ©lectionnez les fichiers et la base de donnÃ©es"
 
 #: includes/class-backupflow-admin.php:111
 msgid "Select files, database, or both before creating a backup."
-msgstr "Sélectionnez des fichiers, une base de données ou les deux avant de créer une sauvegarde."
+msgstr "SÃ©lectionnez des fichiers, une base de donnÃ©es ou les deux avant de crÃ©er une sauvegarde."
 
 #: includes/class-backupflow-admin.php:830
 msgid "Selective schedules"
-msgstr "Horaires sélectifs"
+msgstr "Horaires sÃ©lectifs"
 
 #: includes/class-backupflow-admin.php:67 includes/class-backupflow-admin.php:173 includes/class-backupflow-admin.php:554
 msgid "Settings"
-msgstr "Paramètres"
+msgstr "ParamÃ¨tres"
 
 #: includes/class-backupflow-admin.php:600
 msgid "Simple Backup, Restore, Migrate"
@@ -1106,7 +1106,7 @@ msgstr "Sauvegarde, restauration, migration simples"
 
 #: includes/class-backupflow-preflight.php:65
 msgid "Single-site WordPress is supported."
-msgstr "WordPress à site unique est pris en charge."
+msgstr "WordPress Ã  site unique est pris en charge."
 
 #: includes/class-backupflow-admin.php:930
 msgid "Size"
@@ -1114,7 +1114,7 @@ msgstr "Taille"
 
 #: includes/class-backupflow-admin.php:738
 msgid "Start restore from any compatible backup. A live status window shows file extraction, database import, and URL rewrite progress."
-msgstr "Démarrez la restauration à partir de n'importe quelle sauvegarde compatible. Une fenêtre d'état en direct affiche l'extraction de fichiers, l'importation de base de données et la progression de la réécriture URL."
+msgstr "DÃ©marrez la restauration Ã  partir de n'importe quelle sauvegarde compatible. Une fenÃªtre d'Ã©tat en direct affiche l'extraction de fichiers, l'importation de base de donnÃ©es et la progression de la rÃ©Ã©criture URL."
 
 #: includes/class-backupflow-admin.php:608
 msgid "Start with the wizard"
@@ -1126,15 +1126,15 @@ msgstr "Stockage"
 
 #: includes/class-backupflow-preflight.php:189
 msgid "Storage is ready."
-msgstr "Le stockage est prêt."
+msgstr "Le stockage est prÃªt."
 
 #: includes/class-backupflow-preflight.php:186
 msgid "Storage settings"
-msgstr "Paramètres de stockage"
+msgstr "ParamÃ¨tres de stockage"
 
 #: includes/class-backupflow-admin.php:755
 msgid "Store backups locally in protected wp-content storage."
-msgstr "Stockez les sauvegardes localement dans un stockage protégé wp-content."
+msgstr "Stockez les sauvegardes localement dans un stockage protÃ©gÃ© wp-content."
 
 #: includes/class-backupflow-preflight.php:108
 msgid "Temporary storage"
@@ -1142,7 +1142,7 @@ msgstr "Stockage temporaire"
 
 #: includes/class-backupflow-preflight.php:111
 msgid "Temporary storage is writable."
-msgstr "Le stockage temporaire est accessible en écriture."
+msgstr "Le stockage temporaire est accessible en Ã©criture."
 
 #: includes/class-backupflow-preflight.php:156
 msgid "The PHP FTP extension is available."
@@ -1162,11 +1162,11 @@ msgstr "L'extension PHP ZipArchive est requise sur ce serveur."
 
 #: includes/class-backupflow-preflight.php:87
 msgid "The PHP ZipArchive extension is required to create and restore BackupFlow ZIP files."
-msgstr "L'extension PHP ZipArchive est requise pour créer et restaurer les fichiers BackupFlow ZIP."
+msgstr "L'extension PHP ZipArchive est requise pour crÃ©er et restaurer les fichiers BackupFlow ZIP."
 
 #: includes/class-backupflow-file-system.php:195
 msgid "The PHP ZipArchive extension is required to create backups."
-msgstr "L'extension PHP ZipArchive est requise pour créer des sauvegardes."
+msgstr "L'extension PHP ZipArchive est requise pour crÃ©er des sauvegardes."
 
 #: includes/class-backupflow-file-system.php:297
 msgid "The PHP ZipArchive extension is required to restore backups."
@@ -1174,39 +1174,39 @@ msgstr "L'extension PHP ZipArchive est requise pour restaurer les sauvegardes."
 
 #: includes/class-backupflow-storage-ftp.php:59
 msgid "The backup archive is missing before FTP upload."
-msgstr "L'archive de sauvegarde est manquante avant le téléchargement de FTP."
+msgstr "L'archive de sauvegarde est manquante avant le tÃ©lÃ©chargement de FTP."
 
 #: includes/class-backupflow-storage-google-drive.php:101
 msgid "The backup archive is missing before Google Drive upload."
-msgstr "L'archive de sauvegarde est manquante avant le téléchargement de Google Drive."
+msgstr "L'archive de sauvegarde est manquante avant le tÃ©lÃ©chargement de Google Drive."
 
 #: includes/class-backupflow-backup-manager.php:275
 msgid "The backup archive was not created correctly."
-msgstr "L'archive de sauvegarde n'a pas été créée correctement."
+msgstr "L'archive de sauvegarde n'a pas Ã©tÃ© crÃ©Ã©e correctement."
 
 #: includes/class-backupflow-restore-manager.php:321
 msgid "The backup does not contain database parts."
-msgstr "La sauvegarde ne contient pas de parties de base de données."
+msgstr "La sauvegarde ne contient pas de parties de base de donnÃ©es."
 
 #: includes/class-backupflow-file-system.php:52
 msgid "The file scan state is missing its file list."
-msgstr "L'état d'analyse des fichiers ne contient pas de liste de fichiers."
+msgstr "L'Ã©tat d'analyse des fichiers ne contient pas de liste de fichiers."
 
 #: includes/class-backupflow-preflight.php:207
 msgid "The server can reach Google services."
-msgstr "Le serveur peut accéder aux services Google."
+msgstr "Le serveur peut accÃ©der aux services Google."
 
 #: includes/class-backupflow-preflight.php:207
 msgid "The server cannot reach Google services right now."
-msgstr "Le serveur ne peut pas accéder aux services Google pour le moment."
+msgstr "Le serveur ne peut pas accÃ©der aux services Google pour le moment."
 
 #: includes/class-backupflow-migrator.php:18
 msgid "The uploaded backup file is missing or unreadable."
-msgstr "Le fichier de sauvegarde téléchargé est manquant ou illisible."
+msgstr "Le fichier de sauvegarde tÃ©lÃ©chargÃ© est manquant ou illisible."
 
 #: includes/class-backupflow-admin.php:1039
 msgid "Theme"
-msgstr "Thème"
+msgstr "ThÃ¨me"
 
 #: includes/class-backupflow-migrator.php:36
 msgid "This ZIP does not include a valid BackupFlow manifest."
@@ -1214,11 +1214,11 @@ msgstr "Ce ZIP n'inclut pas de manifeste BackupFlow valide."
 
 #: includes/class-backupflow-restore-manager.php:169
 msgid "This backup does not contain restorable files or database tables."
-msgstr "Cette sauvegarde ne contient pas de fichiers restaurables ni de tables de base de données."
+msgstr "Cette sauvegarde ne contient pas de fichiers restaurables ni de tables de base de donnÃ©es."
 
 #: includes/class-backupflow-admin.php:109
 msgid "This restore can replace site files or database data. Continue?"
-msgstr "Cette restauration peut remplacer les fichiers du site ou les données de la base de données. Continuer?"
+msgstr "Cette restauration peut remplacer les fichiers du site ou les donnÃ©es de la base de donnÃ©es. Continuer?"
 
 #: includes/class-backupflow-admin.php:928
 msgid "Type"
@@ -1226,63 +1226,63 @@ msgstr "Tapez"
 
 #: includes/class-backupflow-admin.php:610
 msgid "URL rewrite uses this site URL"
-msgstr "La réécriture de URL utilise ce site URL"
+msgstr "La rÃ©Ã©criture de URL utilise ce site URL"
 
 #: includes/class-backupflow-backup-manager.php:90
 msgid "Unknown backup step."
-msgstr "Étape de sauvegarde inconnue."
+msgstr "Ã‰tape de sauvegarde inconnue."
 
 #: includes/class-backupflow-restore-manager.php:106
 msgid "Unknown restore step."
-msgstr "Étape de restauration inconnue."
+msgstr "Ã‰tape de restauration inconnue."
 
 #: includes/class-backupflow-admin.php:681
 msgid "Upload a BackupFlow ZIP"
-msgstr "Téléchargez un BackupFlow ZIP"
+msgstr "TÃ©lÃ©chargez un BackupFlow ZIP"
 
 #: includes/class-backupflow-admin.php:756
 msgid "Upload completed backups to your own FTP location."
-msgstr "Téléchargez les sauvegardes terminées sur votre propre emplacement FTP."
+msgstr "TÃ©lÃ©chargez les sauvegardes terminÃ©es sur votre propre emplacement FTP."
 
 #: includes/class-backupflow-admin.php:701
 msgid "Upload only"
-msgstr "Télécharger uniquement"
+msgstr "TÃ©lÃ©charger uniquement"
 
 #: includes/class-backupflow-admin.php:112
 msgid "Upload paused. Retrying this chunk..."
-msgstr "Téléchargement interrompu. Je réessaye ce morceau..."
+msgstr "TÃ©lÃ©chargement interrompu. Je rÃ©essaye ce morceau..."
 
 #: includes/class-backupflow-admin.php:319 includes/class-backupflow-admin.php:375
 msgid "Upload session not found. Choose the backup file again."
-msgstr "Session de téléchargement introuvable. Choisissez à nouveau le fichier de sauvegarde."
+msgstr "Session de tÃ©lÃ©chargement introuvable. Choisissez Ã  nouveau le fichier de sauvegarde."
 
 #: includes/class-backupflow-admin.php:101
 msgid "Upload session ready."
-msgstr "Session de téléchargement prête."
+msgstr "Session de tÃ©lÃ©chargement prÃªte."
 
 #: includes/class-backupflow-backup-manager.php:317
 msgid "Uploaded backup to %s."
-msgstr "Sauvegarde téléchargée sur%s."
+msgstr "Sauvegarde tÃ©lÃ©chargÃ©e sur%s."
 
 #: includes/class-backupflow-admin.php:113
 msgid "Uploaded chunk %d."
-msgstr "Morceau téléchargé%d."
+msgstr "Morceau tÃ©lÃ©chargÃ©%d."
 
 #: includes/class-backupflow-admin.php:962
 msgid "Uploaded file"
-msgstr "Fichier téléchargé"
+msgstr "Fichier tÃ©lÃ©chargÃ©"
 
 #: includes/class-backupflow-admin.php:98
 msgid "Uploading backup"
-msgstr "Téléchargement de la sauvegarde"
+msgstr "TÃ©lÃ©chargement de la sauvegarde"
 
 #: includes/class-backupflow-backup-manager.php:284 includes/class-backupflow-backup-manager.php:301
 msgid "Uploading backup to remote storage"
-msgstr "Téléchargement de la sauvegarde sur le stockage distant"
+msgstr "TÃ©lÃ©chargement de la sauvegarde sur le stockage distant"
 
 #: includes/class-backupflow-admin.php:116
 msgid "Uploading in chunks up to %s."
-msgstr "Téléchargement en morceaux jusqu'à%s."
+msgstr "TÃ©lÃ©chargement en morceaux jusqu'Ã %s."
 
 #: includes/class-backupflow-admin.php:772
 msgid "Use passive mode"
@@ -1318,7 +1318,7 @@ msgstr "Que veux-tu sauvegarder ?"
 
 #: includes/class-backupflow-admin.php:694
 msgid "What do you want to restore from this backup?"
-msgstr "Que souhaitez-vous restaurer à partir de cette sauvegarde ?"
+msgstr "Que souhaitez-vous restaurer Ã  partir de cette sauvegardeÂ ?"
 
 #: includes/class-backupflow-admin.php:853
 msgid "What?"
@@ -1326,7 +1326,7 @@ msgstr "Quoi ?"
 
 #: includes/class-backupflow-admin.php:877
 msgid "When should BackupFlow run?"
-msgstr "Quand BackupFlow doit-il être exécuté ?"
+msgstr "Quand BackupFlow doit-il Ãªtre exÃ©cutÃ©Â ?"
 
 #: includes/class-backupflow-admin.php:854
 msgid "When?"
@@ -1334,11 +1334,11 @@ msgstr "Quand ?"
 
 #: includes/class-backupflow-admin.php:888
 msgid "Where to store your backup?"
-msgstr "Où stocker votre sauvegarde ?"
+msgstr "OÃ¹ stocker votre sauvegarde ?"
 
 #: includes/class-backupflow-admin.php:855
 msgid "Where?"
-msgstr "Où ?"
+msgstr "OÃ¹ ?"
 
 #: includes/class-backupflow-preflight.php:62
 msgid "WordPress mode"
@@ -1350,7 +1350,7 @@ msgstr "Travailler..."
 
 #: includes/class-backupflow-backup-manager.php:114
 msgid "Workspace ready. Checking selected backup parts."
-msgstr "Espace de travail prêt. Vérification des pièces de sauvegarde sélectionnées."
+msgstr "Espace de travail prÃªt. VÃ©rification des piÃ¨ces de sauvegarde sÃ©lectionnÃ©es."
 
 #: includes/class-backupflow-admin.php:609
 msgid "Writable"
@@ -1362,15 +1362,15 @@ msgstr "Oui, annuler"
 
 #: includes/helpers.php:227
 msgid "You do not have permission to manage backups."
-msgstr "Vous n'êtes pas autorisé à gérer les sauvegardes."
+msgstr "Vous n'Ãªtes pas autorisÃ© Ã  gÃ©rer les sauvegardes."
 
 #: includes/class-backupflow-restore-manager.php:308
 msgid "Your files were restored successfully."
-msgstr "Vos fichiers ont été restaurés avec succès."
+msgstr "Vos fichiers ont Ã©tÃ© restaurÃ©s avec succÃ¨s."
 
 #: includes/class-backupflow-restore-manager.php:500
 msgid "Your site was restored successfully."
-msgstr "Votre site a été restauré avec succès."
+msgstr "Votre site a Ã©tÃ© restaurÃ© avec succÃ¨s."
 
 #: includes/class-backupflow-preflight.php:84
 msgid "ZIP support"
@@ -1386,11 +1386,11 @@ msgstr "Articles%d"
 
 #: includes/class-backupflow-admin.php:124
 msgid "Checking restore readiness"
-msgstr "Vérification de la préparation à la restauration"
+msgstr "VÃ©rification de la prÃ©paration Ã  la restauration"
 
 #: includes/class-backupflow-admin.php:121
 msgid "Uploaded %1$s of %2$s at %3$s/s."
-msgstr "Téléversé%1$s de%2$s à%3$s/s."
+msgstr "TÃ©lÃ©versÃ©%1$s de%2$s Ã %3$s/s."
 
 #: includes/class-backupflow-restore-manager.php:421
 msgid "One or more plugin tables were imported without rejected foreign key constraints so the migration could continue safely."

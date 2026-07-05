@@ -3,7 +3,7 @@
  * Plugin Name:       BackupFlow - Easy Backup, Restore & Migration
  * Plugin URI:        https://themefreex.com/backupflow/
  * Description:       Simple branded backups, one-click restore, and migration for WordPress with local, FTP, and Google Drive storage.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 6.5
  * Tested up to:      7.0
  * Requires PHP:      7.4
@@ -11,7 +11,7 @@
  * Author URI:        https://codefreex.com/
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       backupflow
+ * Text Domain:       BackupFlow
  * Domain Path:       /languages
  *
  * @package BackupFlow
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BACKUPFLOW_VERSION', '1.0.0' );
+define( 'BACKUPFLOW_VERSION', '1.0.1' );
 define( 'BACKUPFLOW_FILE', __FILE__ );
 define( 'BACKUPFLOW_BASENAME', plugin_basename( __FILE__ ) );
 define( 'BACKUPFLOW_DIR', plugin_dir_path( __FILE__ ) );
