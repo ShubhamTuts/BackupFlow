@@ -1391,3 +1391,7 @@ msgstr "Wiederherstellungsbereitschaft wird geprüft"
 #: includes/class-backupflow-admin.php:121
 msgid "Uploaded %1$s of %2$s at %3$s/s."
 msgstr "%1$s von %2$s mit %3$s/s hochgeladen."
+
+#: includes/class-backupflow-restore-manager.php:421
+msgid "One or more plugin tables were imported without rejected foreign key constraints so the migration could continue safely."
+msgstr "Eine oder mehrere Plugin-Tabellen wurden ohne abgelehnte Fremdschluessel-Constraints importiert, damit die Migration sicher fortgesetzt werden konnte."

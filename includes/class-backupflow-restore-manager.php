@@ -359,6 +359,8 @@ class BackupFlow_Restore_Manager {
 	}
 
 	private function import_database( $job ) {
+		global $wpdb;
+
 		$payload = $job['payload'];
 		$files   = isset( $payload['database_part_files'] ) ? array_values( (array) $payload['database_part_files'] ) : array();
 		$index   = isset( $payload['database_part_index'] ) ? (int) $payload['database_part_index'] : 0;
@@ -374,11 +376,14 @@ class BackupFlow_Restore_Manager {
 
 		if ( empty( $payload['database_import_state'] ) || $payload['database_import_state']['file_path'] !== $files[ $index ]['path'] ) {
 			$payload['database_import_state'] = array(
-				'file_path'       => $files[ $index ]['path'],
-				'offset'          => 0,
-				'statement'       => '',
-				'statements_done' => 0,
-				'done'            => false,
+				'file_path'             => $files[ $index ]['path'],
+				'offset'                => 0,
+				'statement'             => '',
+				'statements_done'       => 0,
+				'source_prefix'         => isset( $payload['manifest']['table_prefix'] ) ? (string) $payload['manifest']['table_prefix'] : '',
+				'destination_prefix'    => $wpdb->prefix,
+				'foreign_key_fallbacks' => 0,
+				'done'                  => false,
 			);
 			$this->jobs->log(
 				$job['id'],
@@ -390,6 +395,8 @@ class BackupFlow_Restore_Manager {
 				)
 			);
 		}
+
+		$fallbacks_before = isset( $payload['database_import_state']['foreign_key_fallbacks'] ) ? (int) $payload['database_import_state']['foreign_key_fallbacks'] : 0;
 
 		$payload['database_import_state'] = $this->database->import_file_chunk(
 			$payload['database_import_state'],
@@ -408,6 +415,15 @@ class BackupFlow_Restore_Manager {
 				}
 			}
 		);
+
+		$fallbacks_after = isset( $payload['database_import_state']['foreign_key_fallbacks'] ) ? (int) $payload['database_import_state']['foreign_key_fallbacks'] : 0;
+		if ( $fallbacks_after > $fallbacks_before ) {
+			$this->jobs->log(
+				$job['id'],
+				__( 'One or more plugin tables were imported without rejected foreign key constraints so the migration could continue safely.', 'backupflow' ),
+				'warning'
+			);
+		}
 
 		if ( ! empty( $payload['database_import_state']['done'] ) ) {
 			$payload['database_part_index']++;

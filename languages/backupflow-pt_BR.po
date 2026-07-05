@@ -1392,3 +1392,7 @@ msgstr "Verificando a prontidão da restauração"
 msgid "Uploaded %1$s of %2$s at %3$s/s."
 msgstr "Carregado %1$s de %2$s em %3$s/s."
 
+#: includes/class-backupflow-restore-manager.php:421
+msgid "One or more plugin tables were imported without rejected foreign key constraints so the migration could continue safely."
+msgstr "Uma ou mais tabelas de plugins foram importadas sem as restricoes de chave estrangeira rejeitadas para que a migracao pudesse continuar com seguranca."
+

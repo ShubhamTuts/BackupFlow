@@ -1,4 +1,4 @@
-=== BackupFlow – Easy Backup, Restore & Migration for WordPress ===
+=== BackupFlow – Easy Backup, Restore & Migration ===
 Contributors: codefreex
 Tags: backup, files backup, cloud backup, wordpress backup, database backup
 Requires at least: 6.5

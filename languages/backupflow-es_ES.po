@@ -1392,3 +1392,6 @@ msgstr "Comprobando la preparación de la restauración"
 msgid "Uploaded %1$s of %2$s at %3$s/s."
 msgstr "Subido %1$s de %2$s en %3$s/s."
 
+#: includes/class-backupflow-restore-manager.php:421
+msgid "One or more plugin tables were imported without rejected foreign key constraints so the migration could continue safely."
+msgstr "Una o mas tablas de plugins se importaron sin las restricciones de clave externa rechazadas para que la migracion pudiera continuar de forma segura."
