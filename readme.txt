@@ -311,7 +311,7 @@ Need setup help?
 
 Read the BackupFlow documentation here:
 
-[BackupFlow Documentation](https://themefreex.com/backupflow/)
+[BackupFlow Documentation](https://backupflow.cloud)
 
 The documentation covers backup setup, restore, migration, FTP storage, Google Drive connection, local backups, and recommended backup workflows.
 
@@ -547,7 +547,7 @@ Local backups are helpful, but if the website server fails, local backup files m
 
 You can read the documentation here:
 
-[BackupFlow Documentation](https://themefreex.com/backupflow/)
+[BackupFlow Documentation](https://backupflow.cloud)
 
 == Screenshots ==
 
@@ -594,4 +594,4 @@ You can read the documentation here:
 Recommended update for restore/import reliability and WordPress.org Plugin Check compatibility.
 
 = 1.0.0 =
-Initial release of BackupFlow with WordPress backup, restore, migration, local storage, FTP upload, and Google Drive upload.
+Initial release of BackupFlow with WordPress backup, restore, migration, local storage, FTP upload, and Google Drive upload

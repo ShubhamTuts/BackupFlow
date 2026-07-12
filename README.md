@@ -475,7 +475,7 @@ For important production websites:
 
 Read the BackupFlow documentation:
 
-[BackupFlow Documentation](https://themefreex.com/backupflow/)
+[BackupFlow Documentation](https://backupflow.cloud)
 
 The documentation covers backup setup, restore, migration, FTP storage, Google Drive connection, local backups, and recommended backup workflows.
 
