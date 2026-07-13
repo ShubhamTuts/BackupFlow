@@ -551,11 +551,15 @@ You can read the documentation here:
 
 == Screenshots ==
 
-1. BackupFlow welcome wizard for creating your first WordPress backup.
-2. Live backup progress modal with backup status and logs.
-3. Backup library with restore, download, and delete actions.
-4. Restore and migration import screen for compatible BackupFlow ZIP files.
-5. Storage settings for Website Server, FTP, and Google Drive.
+1. BackupFlow dashboard showing site protection status, latest backup details, storage status, runtime information, and recent backups.
+2. Create Backup wizard for choosing files and database backup contents before continuing.
+3. Backup library with local restore, download, delete actions, and quick access to related Codefreex products.
+4. Restore and Migrate screen for uploading compatible BackupFlow ZIP files and viewing restore points.
+5. Secure upload progress modal with live transfer progress and status logs during backup import.
+6. Backup destination step for choosing Website Server, FTP, or Google Drive storage.
+7. Backup progress modal with live backup status and detailed job logs.
+8. Premium Roadmap screen showing planned storage, schedule, cloning, WP-CLI, and support add-ons.
+9. Storage settings screen for local server, FTP, and Google Drive configuration.
 
 == Changelog ==
 
